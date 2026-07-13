@@ -24,6 +24,7 @@ button, input, select { font: inherit; }
 .eyebrow { margin: 0 0 3px; color: var(--green); font-size: 12px; font-weight: 750; letter-spacing: .03em; }
 .status-pill { margin-left: auto; padding: 6px 11px; border-radius: 999px; background: var(--green-soft); color: var(--green-dark); font-size: 12px; font-weight: 750; }
 .status-pill.pale { background: #edf1ef; color: #46524b; }
+.status-pill.warn { background: var(--amber-soft); color: var(--amber); }
 
 .page-shell { max-width: 1180px; margin: 0 auto; padding: 46px 20px 60px; }
 .hero { display: grid; grid-template-columns: 1.5fr .75fr; gap: 28px; align-items: end; margin-bottom: 26px; }

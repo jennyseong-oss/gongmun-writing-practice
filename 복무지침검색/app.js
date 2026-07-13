@@ -127,10 +127,15 @@ function renderResult(result, input) {
       <b>${formatWon(line.paid)}</b>
     </div>`).join("");
 
+  const approved = input.profile.reviewStatus === "approved";
+  const statusPill = approved
+    ? `<span class="status-pill pale">세전 예상</span>`
+    : `<span class="status-pill warn">검증용 예상액 · 검토 대기</span>`;
+
   target.innerHTML = `
     <div class="result-header">
       <div><p class="eyebrow">${input.profile.label}</p><h3>병가 급여 영향</h3></div>
-      <span class="status-pill pale">세전 예상</span>
+      ${statusPill}
     </div>
     <div class="leave-summary">
       <div><span>이번 병가</span><strong>${input.currentSickDays}일</strong></div>

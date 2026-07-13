@@ -1,6 +1,7 @@
 export const PROFILES = {
   education: {
     id: "education", label: "교육실무사", kind: "monthly", schedule: "continuous", paidSickLeaveLimit: 40,
+    reviewStatus: "approved",
     components: [
       { id: "base", label: "기본급 2유형", amount: 2144500 },
       { id: "meal", label: "급식비", amount: 160000 },
@@ -10,6 +11,7 @@ export const PROFILES = {
   },
   nutritionist: {
     id: "nutritionist", label: "영양사", kind: "monthly", schedule: "continuous", paidSickLeaveLimit: 40,
+    reviewStatus: "pending",
     components: [
       { id: "base", label: "기본급 1유형", amount: 2344500 },
       { id: "meal", label: "급식비", amount: 160000 },
@@ -22,6 +24,7 @@ export const PROFILES = {
   },
   specialEducation: {
     id: "specialEducation", label: "특수교육실무사", kind: "monthly", schedule: "vacation", paidSickLeaveLimit: 40,
+    reviewStatus: "pending",
     components: [
       { id: "base", label: "기본급 2유형", amount: 2144500 },
       { id: "meal", label: "급식비", amount: 160000 },
@@ -32,6 +35,7 @@ export const PROFILES = {
   },
   cook: {
     id: "cook", label: "조리사", kind: "monthly", schedule: "vacation", paidSickLeaveLimit: 40,
+    reviewStatus: "pending",
     components: [
       { id: "base", label: "기본급 2유형", amount: 2144500 },
       { id: "meal", label: "급식비", amount: 160000 },
@@ -43,6 +47,7 @@ export const PROFILES = {
   },
   cookingWorker: {
     id: "cookingWorker", label: "조리실무사", kind: "monthly", schedule: "vacation", paidSickLeaveLimit: 40,
+    reviewStatus: "pending",
     components: [
       { id: "base", label: "기본급 2유형", amount: 2144500 },
       { id: "meal", label: "급식비", amount: 160000 },
@@ -53,6 +58,7 @@ export const PROFILES = {
   },
   hourly: {
     id: "hourly", label: "시급제 단시간 근로자", kind: "hourly", schedule: "hourly", paidSickLeaveLimit: 40,
+    reviewStatus: "pending",
     hourlyWage: 12570, components: [],
   },
 };
@@ -81,12 +87,13 @@ export function getSickLeaveAllocation({ employmentType, contractMonths, previou
 }
 
 function ceilWon(value) {
-  return Math.ceil(value - 1e-10);
+  return Math.ceil(value - 1e-10) || 0;
 }
 
 function calculateMonthly(input) {
   const { profile, daysInMonth, scheduleType, allocation } = input;
   const warnings = [];
+  if (profile.reviewStatus !== "approved") warnings.push("이 대표 프로필은 급여담당자 검토가 완료되지 않았습니다. 결과는 검증용 예상값이며 공개 계산에는 사용할 수 없습니다.");
   if (!allocation.eligible) warnings.push("현재 계약조건에서는 일반 병가가 부여되지 않을 수 있습니다.");
   if (input.currentSickDays + input.previousSickDays > allocation.totalLimit) warnings.push("연간 병가 총 한도를 초과하는 구간은 결근 등 별도 처리가 필요합니다.");
   if (input.inputMode === "standard") warnings.push("표준금액으로 계산했습니다. 실제 급여명세 금액과 다르면 직접 입력 모드를 사용하세요.");
@@ -108,6 +115,7 @@ function calculateMonthly(input) {
 
 function calculateHourly(input) {
   const warnings = [];
+  if (input.profile.reviewStatus !== "approved") warnings.push("이 대표 프로필은 급여담당자 검토가 완료되지 않았습니다. 결과는 검증용 예상값이며 공개 계산에는 사용할 수 없습니다.");
   const wage = input.inputMode === "actual" ? Number(input.hourlyWage || input.profile.hourlyWage) : input.profile.hourlyWage;
   const eligibleForPaidSickLeave = input.weeklyHours >= 15 && input.allocation.eligible;
   const paidSickHours = eligibleForPaidSickLeave ? input.allocation.paidCurrent * input.dailyHours : 0;
