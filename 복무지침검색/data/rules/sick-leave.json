@@ -1,0 +1,101 @@
+{
+  "schemaVersion": "1.0.0",
+  "topic": "sick_leave",
+  "title": "병가",
+  "status": "rule_extracted",
+  "calculationStatus": "gross_pay_rule_extracted_pending_profile_validation",
+  "sourceDocumentIds": ["SEOUL-LEAVE-2026", "SEOUL-WAGE-2026"],
+  "formulaIds": ["SICK-LEAVE-GROSS-PAY-2026"],
+  "rules": [
+    {
+      "id": "SL-INDEFINITE-ELIGIBILITY",
+      "source": {"documentId": "SEOUL-LEAVE-2026", "printedPages": [52]},
+      "appliesWhen": {"employmentTermType": "indefinite", "reason": ["illness", "injury", "infectious_risk"]},
+      "excludesWhen": {"employmentTermType": ["ultra_short_time", "fixed_term_3_months_or_less"]},
+      "effect": {"annualTotalDays": 60, "annualPaidDays": 40, "annualUnpaidDays": 20, "periodUnit": "accounting_year"}
+    },
+    {
+      "id": "SL-HOURLY-GRADED-PAID",
+      "source": {"documentId": "SEOUL-LEAVE-2026", "printedPages": [155, 156]},
+      "appliesWhen": {"employmentPayFramework": "hobongje"},
+      "effect": {"annualTotalDays": 60, "annualPaidDays": 60, "annualUnpaidDays": 0}
+    },
+    {
+      "id": "SL-FIXED-TERM-PRORATION",
+      "source": {"documentId": "SEOUL-LEAVE-2026", "printedPages": [168]},
+      "appliesWhen": {"employmentTermType": "fixed_term", "continuousServiceMonths": {"greaterThan": 3, "lessThan": 12}},
+      "effect": {
+        "annualTotalDaysBase": 60,
+        "annualPaidDaysBase": 40,
+        "formula": "round_half_up(base_days * contract_months / 12)"
+      },
+      "reviewRequiredWhen": ["occupation_specific_exception", "early_contract_end"]
+    },
+    {
+      "id": "SL-DIAGNOSIS-CERTIFICATE",
+      "source": {"documentId": "SEOUL-LEAVE-2026", "printedPages": [52, 53]},
+      "effect": {
+        "certificateRequiredFromCumulativeDay": 7,
+        "certificateRequiredEachUseAfterThreshold": true,
+        "missingCertificateTreatment": "deduct_from_annual_paid_leave"
+      },
+      "exceptions": ["food_service_lung_cancer_secondary_exam_threshold_count_only"]
+    },
+    {
+      "id": "SL-WEEKEND-HOLIDAY-INCLUSION",
+      "source": {"documentId": "SEOUL-LEAVE-2026", "printedPages": [52, 55, 56, 57]},
+      "default": "exclude_weekends_and_holidays",
+      "includeWhen": {"substantivelyConsecutiveWorkingDays": {"atLeast": 15}},
+      "reviewRequiredWhen": ["split_requests_appear_continuous", "vacation_nonworking_break"]
+    },
+    {
+      "id": "SL-OCCUPATIONAL-INJURY",
+      "source": {"documentId": "SEOUL-LEAVE-2026", "printedPages": [58, 59, 60]},
+      "appliesWhen": {"workersCompensationApproval": true},
+      "effect": {"maximumDaysPerSameReason": 180, "separateFromOrdinarySickLeave": true, "periodUnit": "not_accounting_year"},
+      "wageReplacement": {"status": "verification_required", "maximumDays": 180},
+      "institutionTopUpExcludedWhen": ["ultra_short_time", "fixed_term_under_1_year"]
+    }
+  ],
+  "answerSafety": {
+    "requiredInputs": [
+      "employmentTermType",
+      "employmentPayFramework",
+      "continuousServicePeriod",
+      "accountingYearSickLeaveUsed",
+      "accountingYearPaidSickLeaveUsed",
+      "requestedPeriod",
+      "reasonType",
+      "workScheduleType"
+    ],
+    "fallback": "담당자 검토 필요",
+    "neverInferFromOccupationOnly": ["employmentPayFramework", "vacationNonWorking", "annualWorkDays"]
+  },
+  "testCases": [
+    {
+      "id": "SL-TC-001",
+      "description": "무기계약 상시근무자가 해당 회계연도 병가를 6일 사용한 뒤 7시간 병조퇴를 신청",
+      "expected": {"certificateRequired": false, "reason": "누적 6일 7시간은 7일 미만"}
+    },
+    {
+      "id": "SL-TC-002",
+      "description": "무기계약 상시근무자가 누적 7일 이상 병가를 추가 신청",
+      "expected": {"certificateRequired": true}
+    },
+    {
+      "id": "SL-TC-003",
+      "description": "6개월 기간제근로자의 병가 부여",
+      "expected": {"totalDays": 30, "paidDays": 20}
+    },
+    {
+      "id": "SL-TC-004",
+      "description": "무기계약근로자가 일반 병가를 41일 사용",
+      "expected": {"paidDays": 40, "unpaidDays": 1, "wageDeductionAmount": "not_calculated_until_wage_rule_approved"}
+    },
+    {
+      "id": "SL-TC-005",
+      "description": "호봉제근로자가 일반 병가를 41일 사용",
+      "expected": {"paidDays": 41, "unpaidDays": 0}
+    }
+  ]
+}

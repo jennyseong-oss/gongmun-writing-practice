@@ -1,0 +1,50 @@
+{
+  "schemaVersion": "1.0.0",
+  "id": "DT-SICK-LEAVE-GROSS-PAY-2026",
+  "title": "병가 세전 지급액 계산 결정 트리",
+  "status": "draft_for_validation",
+  "startNodeId": "select_profile",
+  "nodes": [
+    {"id": "select_profile", "type": "question", "field": "profileId", "prompt": "직종 또는 계산 유형을 선택하세요.", "next": "confirm_pay_framework"},
+    {"id": "confirm_pay_framework", "type": "question", "field": "payFramework", "prompt": "실제 급여체계를 선택하세요.", "options": ["monthly", "hourly", "daily", "hobongje"], "next": "confirm_employment_term"},
+    {"id": "confirm_employment_term", "type": "question", "field": "employmentTermType", "prompt": "근로계약 유형을 선택하세요.", "options": ["indefinite", "fixed_term", "part_time", "ultra_short_time"], "next": "confirm_schedule"},
+    {"id": "confirm_schedule", "type": "question", "field": "workScheduleType", "prompt": "근무형태를 선택하세요.", "options": ["continuous", "annual_workdays", "vacation_nonworking"], "next": "collect_contract"},
+    {"id": "collect_contract", "type": "form", "fields": ["hireDate", "contractEndDate", "weeklyContractHours", "dailyContractHours"], "next": "check_sick_leave_exclusion"},
+    {
+      "id": "check_sick_leave_exclusion",
+      "type": "decision",
+      "conditions": [
+        {"if": "employmentTermType == 'ultra_short_time'", "next": "stop_not_eligible"},
+        {"if": "employmentTermType == 'fixed_term' && continuousServiceMonths <= 3", "next": "stop_not_eligible"}
+      ],
+      "defaultNext": "collect_sick_leave_usage"
+    },
+    {"id": "collect_sick_leave_usage", "type": "form", "fields": ["accountingYearTotalSickLeaveUsed", "accountingYearPaidSickLeaveUsed", "requestedSickLeave", "sickLeaveReasonType", "diagnosisCertificateStatus"], "next": "split_paid_unpaid"},
+    {"id": "split_paid_unpaid", "type": "calculation", "ruleIds": ["SL-INDEFINITE-ELIGIBILITY", "SL-HOURLY-GRADED-PAID", "SL-FIXED-TERM-PRORATION"], "outputFields": ["paidSickLeave", "unpaidSickLeave"], "next": "collect_calendar"},
+    {"id": "collect_calendar", "type": "form", "fields": ["daysInMonth", "vacationDaysInMonth", "designatedPaidWorkDaysInVacation"], "next": "collect_pay_components"},
+    {"id": "collect_pay_components", "type": "form", "fields": ["basePayOrHourlyWage", "actualAllowanceAmounts", "bonusEligibility", "actualWorkHours", "paidHolidayHours"], "next": "check_conflicts"},
+    {
+      "id": "check_conflicts",
+      "type": "decision",
+      "conditions": [
+        {"if": "profilePayFramework != payFramework", "next": "stop_review_required"},
+        {"if": "standardAmountDiffersFromActual && differenceReasonUnknown", "next": "stop_review_required"},
+        {"if": "workScheduleType == 'vacation_nonworking' && schoolCalendarMissing", "next": "stop_review_required"},
+        {"if": "occupationAllowanceEligibilityUnknown", "next": "stop_review_required"}
+      ],
+      "defaultNext": "calculate_gross"
+    },
+    {"id": "calculate_gross", "type": "calculation", "formulaId": "SICK-LEAVE-GROSS-PAY-2026", "next": "render_result"},
+    {"id": "render_result", "type": "result", "fields": ["profileSummary", "paidAndUnpaidSickLeave", "componentCalculations", "grossPay", "excludedItems", "sourceCitations", "validationWarnings"]},
+    {"id": "stop_not_eligible", "type": "stop", "result": "병가 적용 대상이 아닐 수 있습니다. 연차·결근 등 대체 처리 여부를 담당자에게 확인하세요."},
+    {"id": "stop_review_required", "type": "stop", "result": "담당자 검토 필요", "includeMissingInputs": true}
+  ],
+  "guardrails": [
+    "Never infer contract terms from occupation name alone.",
+    "Never calculate net pay.",
+    "Never use an unverified allowance as payable.",
+    "Always show source and calculation details.",
+    "Stop when required inputs conflict or are missing."
+  ]
+}
+

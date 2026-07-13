@@ -1,0 +1,15 @@
+{
+  "schemaVersion": "1.0.0",
+  "registryAsOf": "2026-07-13",
+  "profiles": [
+    {"id": "SEOUL-2026-EDUCATION-PRACTICE-WORKER", "occupationName": "교육실무사", "file": "profiles/education-practice-worker.json", "supportLevel": "calculation_rule_mapped", "validation": "payroll_review_pending"},
+    {"id": "SEOUL-2026-NUTRITIONIST", "occupationName": "영양사", "file": "profiles/nutritionist.json", "supportLevel": "calculation_rule_mapped", "validation": "payroll_review_pending"},
+    {"id": "SEOUL-2026-SPECIAL-EDUCATION-PRACTICE-WORKER", "occupationName": "특수교육실무사", "file": "profiles/special-education-practice-worker.json", "supportLevel": "calculation_rule_mapped", "validation": "payroll_review_pending"},
+    {"id": "SEOUL-2026-COOK", "occupationName": "조리사", "file": "profiles/cook.json", "supportLevel": "calculation_rule_mapped", "validation": "payroll_review_pending"},
+    {"id": "SEOUL-2026-COOKING-PRACTICE-WORKER", "occupationName": "조리실무사", "file": "profiles/cooking-practice-worker.json", "supportLevel": "calculation_rule_mapped", "validation": "payroll_review_pending"},
+    {"id": "SEOUL-2026-HOURLY-PART-TIME", "occupationName": "시급제 단시간 근로자", "file": "profiles/hourly-part-time-worker.json", "supportLevel": "calculation_rule_mapped", "validation": "contract_case_and_payroll_review_pending"}
+  ],
+  "publicCalculationEnabled": false,
+  "enablementRequirements": ["manual_payroll_review", "representative_case_pass", "boundary_test_pass", "source_cross_check"]
+}
+

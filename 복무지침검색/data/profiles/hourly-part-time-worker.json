@@ -1,0 +1,55 @@
+{
+  "schemaVersion": "1.0.0",
+  "id": "SEOUL-2026-HOURLY-PART-TIME",
+  "year": 2026,
+  "occupationName": "시급제 단시간 근로자",
+  "representativeUse": "hourly_part_time_living_wage",
+  "status": "profile_mapped_pending_contract_case_review",
+  "sourceDocumentIds": ["SEOUL-WAGE-2026", "SEOUL-LEAVE-2026", "SEOUL-LIVING-WAGE-2026"],
+  "sourceLocators": [
+    {"documentId": "SEOUL-WAGE-2026", "printedPages": [40, 41]},
+    {"documentId": "SEOUL-LEAVE-2026", "printedPages": [168]},
+    {"documentId": "SEOUL-LIVING-WAGE-2026"}
+  ],
+  "classification": {
+    "payFramework": "hourly",
+    "baseHourlyWageWon": 12570,
+    "applicabilityAny": [{"contractPeriodMonths": {"lessThan": 1}}, {"weeklyContractHours": {"lessThan": 40}}],
+    "excludedWhen": {"contractPeriodMonths": {"atLeast": 1}, "weeklyContractHours": 40},
+    "requiresActualContractInput": true
+  },
+  "holidayEligibility": {
+    "weeklyPaidHoliday": {"weeklyContractHours": {"atLeast": 15}},
+    "publicHolidayAndSubstituteHoliday": {"weeklyContractHours": {"atLeast": 15}},
+    "laborDay": {"appliesRegardlessOfUltraShortTime": true},
+    "noExtraPayWhenHolidayFallsOnNoWorkObligationDay": true
+  },
+  "sickLeaveEligibility": {
+    "fixedTermThreeMonthsOrLess": "not_granted",
+    "fixedTermOverThreeUnderTwelveMonths": "prorated_total_60_paid_40",
+    "ultraShortTime": "excluded",
+    "paidSickLeaveHoursPerDay": "daily_contract_hours"
+  },
+  "grossPayFormula": "hourlyWageWon * (actualWorkHours + paidHolidayHours + approvedPaidSickLeaveHours)",
+  "allowanceConversion": {
+    "appliesToEligibleReplacementWorkers": true,
+    "formula": "round_to_integer(monthlyOccupationAllowance / 209)",
+    "preventDuplicateMonthlyAllowancePayment": true
+  },
+  "testCases": [
+    {
+      "id": "HPT-SL-TC-001",
+      "description": "생활임금, 실제근로 60시간, 주휴 12시간, 승인된 유급 병가 4시간",
+      "input": {"hourlyWageWon": 12570, "actualWorkHours": 60, "paidHolidayHours": 12, "approvedPaidSickLeaveHours": 4},
+      "expected": {"grossPayWon": 955320}
+    },
+    {
+      "id": "HPT-SL-TC-002",
+      "description": "주 14시간 초단시간근로자의 일반 주휴 판단",
+      "input": {"weeklyContractHours": 14},
+      "expected": {"weeklyPaidHolidayEligible": false, "ordinarySickLeaveEligible": false, "laborDayPaidHolidayEligible": true}
+    }
+  ],
+  "approvalRequirements": ["select_real_representative_occupation", "obtain_sample_contract", "confirm_weekly_paid_holiday_hours", "payroll_officer_manual_review"]
+}
+

@@ -1,0 +1,47 @@
+{
+  "schemaVersion": "1.0.0",
+  "id": "SEOUL-2026-SPECIAL-EDUCATION-PRACTICE-WORKER",
+  "year": 2026,
+  "occupationName": "특수교육실무사",
+  "representativeUse": "monthly_annual_workdays_vacation_nonworking",
+  "status": "profile_mapped_pending_payroll_review",
+  "sourceDocumentIds": ["SEOUL-WAGE-2026", "SEOUL-LEAVE-2026"],
+  "sourceLocators": [
+    {"documentId": "SEOUL-WAGE-2026", "printedPages": [21, 22, 35, 37, 57, 58]},
+    {"documentId": "SEOUL-LEAVE-2026", "printedPages": [52, 53, 57]}
+  ],
+  "classification": {
+    "payFramework": "monthly",
+    "basePayType": "type_2",
+    "defaultWorkScheduleType": "annual_workdays_vacation_nonworking",
+    "requiresAnnualWorkdaysInput": true,
+    "requiresSchoolCalendarInput": true
+  },
+  "payComponents": [
+    {"id": "base_pay", "amountWon": 2144500, "frequency": "monthly", "sickLeavePolicy": "prorate_for_all_unpaid_days"},
+    {"id": "meal_allowance", "amountWon": 160000, "frequency": "monthly", "sickLeavePolicy": "prorate_for_all_unpaid_days"},
+    {"id": "special_education_support_allowance", "amountWon": 20000, "frequency": "monthly", "eligibility": "special_education_practice_worker_at_institution_or_school", "sickLeavePolicy": "prorate_for_all_unpaid_days"},
+    {"id": "longevity_allowance", "frequency": "monthly", "amountRule": {"startsAtServiceYears": 1, "incrementWonPerYear": 41000, "maximumWon": 984000}, "sickLeavePolicy": "prorate_excluding_vacation_days_from_deduction"},
+    {"id": "family_allowance", "frequency": "monthly", "eligibility": "verified_dependent_and_nonduplication_required", "sickLeavePolicy": "prorate_excluding_vacation_days_from_deduction"},
+    {"id": "holiday_bonus", "annualAmountWon": 2144500, "installmentAmountWon": 1072250, "frequency": "twice_yearly", "sickLeavePolicy": "full_if_eligible"},
+    {"id": "regular_bonus", "annualAmountWon": 1000000, "installmentAmountWon": 500000, "frequency": "twice_yearly", "sickLeavePolicy": "full_if_eligible"}
+  ],
+  "formulaId": "SICK-LEAVE-GROSS-PAY-2026",
+  "requiredCalendarInputs": ["daysInMonth", "vacationDaysInMonth", "designatedPaidWorkDaysInVacation", "unpaidSickLeaveDaysOutsideVacation", "unpaidSickLeaveDaysInsideVacation"],
+  "testCases": [
+    {
+      "id": "SEPW-SL-TC-001",
+      "description": "31일 월, 방학 외 무급 병가 1일, 근속·가족수당 없음",
+      "input": {"daysInMonth": 31, "unpaidSickLeaveDaysOutsideVacation": 1, "basePayWon": 2144500, "mealAllowanceWon": 160000, "specialEducationSupportAllowanceWon": 20000},
+      "expected": {"basePayPaidWon": 2075323, "mealAllowancePaidWon": 154839, "specialEducationSupportAllowancePaidWon": 19355, "grossPayWon": 2249517}
+    },
+    {
+      "id": "SEPW-SL-TC-002",
+      "description": "방학기간만 존재하고 별도 무급 병가가 없는 월",
+      "input": {"vacationNonWorking": true, "unpaidSickLeaveDaysOutsideVacation": 0},
+      "expected": {"sickLeaveDeductionDays": 0, "note": "방학 중 비근무기간 자체를 무급 병가로 처리하지 않음"}
+    }
+  ],
+  "approvalRequirements": ["confirm_annual_workdays", "confirm_school_calendar", "confirm_designated_vacation_workdays", "payroll_officer_manual_review", "boundary_tests_pass"]
+}
+

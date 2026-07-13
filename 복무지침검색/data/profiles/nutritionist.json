@@ -1,0 +1,61 @@
+{
+  "schemaVersion": "1.0.0",
+  "id": "SEOUL-2026-NUTRITIONIST",
+  "year": 2026,
+  "occupationName": "영양사",
+  "representativeUse": "monthly_continuous_licensed_worker",
+  "status": "profile_mapped_pending_payroll_review",
+  "sourceDocumentIds": ["SEOUL-WAGE-2026", "SEOUL-LEAVE-2026"],
+  "sourceLocators": [
+    {"documentId": "SEOUL-WAGE-2026", "printedPages": [21, 22, 23, 35, 37, 57, 58]},
+    {"documentId": "SEOUL-LEAVE-2026", "printedPages": [52, 53]}
+  ],
+  "classification": {
+    "payFramework": "monthly",
+    "basePayType": "type_1",
+    "defaultWorkScheduleType": "continuous",
+    "licenseRequired": true,
+    "requiresActualAssignmentConfirmation": true
+  },
+  "payComponents": [
+    {"id": "base_pay", "amountWon": 2344500, "frequency": "monthly", "sickLeavePolicy": "prorate_for_unpaid_days"},
+    {"id": "meal_allowance", "amountWon": 160000, "frequency": "monthly", "eligibility": {"weeklyContractHours": {"atLeast": 20}}, "sickLeavePolicy": "prorate_for_unpaid_days"},
+    {
+      "id": "license_additional_allowance",
+      "frequency": "monthly",
+      "amountRule": {"leadNutritionistWon": 117230, "otherNutritionistWhenMultipleWon": 20000},
+      "eligibility": ["nutritionist_license", "food_service_facility_registration", "actual_role_confirmation"],
+      "sickLeavePolicy": "prorate_for_unpaid_days"
+    },
+    {"id": "hazard_allowance", "amountWon": 70000, "frequency": "monthly", "eligibility": "direct_food_service_management", "sickLeavePolicy": "prorate_for_unpaid_days"},
+    {"id": "dietary_guidance_allowance", "amountWon": 50000, "frequency": "monthly", "eligibility": "nutritionist_working_at_institution_or_school", "sickLeavePolicy": "prorate_for_unpaid_days"},
+    {"id": "longevity_allowance", "frequency": "monthly", "amountRule": {"startsAtServiceYears": 1, "incrementWonPerYear": 41000, "maximumWon": 984000}, "eligibility": "verified_service_years_required", "sickLeavePolicy": "prorate_for_unpaid_days"},
+    {"id": "family_allowance", "frequency": "monthly", "eligibility": "verified_dependent_and_nonduplication_required", "sickLeavePolicy": "prorate_for_unpaid_days"},
+    {"id": "holiday_bonus", "annualAmountWon": 2144500, "installmentAmountWon": 1072250, "frequency": "twice_yearly", "eligibility": "eligibility_on_payment_reference_date_required", "sickLeavePolicy": "full_if_eligible"},
+    {"id": "regular_bonus", "annualAmountWon": 1000000, "installmentAmountWon": 500000, "frequency": "twice_yearly", "eligibility": "three_months_continuous_service_on_reference_date", "sickLeavePolicy": "full_if_eligible"}
+  ],
+  "formulaId": "SICK-LEAVE-GROSS-PAY-2026",
+  "testCases": [
+    {
+      "id": "NUT-SL-TC-001",
+      "description": "31일 월에 무급 병가 1일, 근속·가족수당 없음, 책임영양사 직종수당 모두 충족",
+      "input": {"daysInMonth": 31, "unpaidSickLeaveDays": 1, "basePayWon": 2344500, "mealAllowanceWon": 160000, "licenseAdditionalAllowanceWon": 117230, "hazardAllowanceWon": 70000, "dietaryGuidanceAllowanceWon": 50000},
+      "expected": {"basePayPaidWon": 2268871, "mealAllowancePaidWon": 154839, "licenseAdditionalAllowancePaidWon": 113449, "hazardAllowancePaidWon": 67742, "dietaryGuidanceAllowancePaidWon": 48388, "grossPayWon": 2653289}
+    },
+    {
+      "id": "NUT-SL-TC-002",
+      "description": "유급 병가 1일이고 모든 직종수당 조건을 충족",
+      "input": {"paidSickLeaveDays": 1, "unpaidSickLeaveDays": 0},
+      "expected": {"unpaidDeductionWon": 0, "grossPayBeforeLongevityFamilyBonusWon": 2741730}
+    }
+  ],
+  "approvalRequirements": [
+    "confirm_license",
+    "confirm_lead_or_other_nutritionist_role",
+    "confirm_food_service_facility_registration",
+    "confirm_direct_food_service_management",
+    "payroll_officer_manual_review",
+    "boundary_tests_pass"
+  ]
+}
+

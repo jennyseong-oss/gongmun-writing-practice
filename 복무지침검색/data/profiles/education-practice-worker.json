@@ -1,0 +1,175 @@
+{
+  "schemaVersion": "1.1.0",
+  "id": "SEOUL-2026-EDUCATION-PRACTICE-WORKER",
+  "year": 2026,
+  "occupationName": "교육실무사",
+  "representativeUse": "monthly_continuous_worker",
+  "status": "approved_for_2026_gross_pay_calculation",
+  "review": {
+    "userReviewCompleted": true,
+    "userReviewDate": "2026-07-13",
+    "payrollOfficerApproval": "approved",
+    "payrollOfficerApprovalDate": "2026-07-13"
+  },
+  "sourceDocumentIds": ["SEOUL-WAGE-2026", "SEOUL-LEAVE-2026"],
+  "sourceLocators": [
+    {
+      "documentId": "SEOUL-WAGE-2026",
+      "printedPages": [21, 22, 23, 24, 31, 32, 33, 34, 35, 37, 57, 58]
+    },
+    {
+      "documentId": "SEOUL-LEAVE-2026",
+      "printedPages": [52, 53]
+    }
+  ],
+  "classification": {
+    "payFramework": "monthly",
+    "basePayType": "type_2",
+    "basePayTypeReason": "교육실무사는 공통임금체계 2유형 적용 직종으로 분류됨",
+    "defaultWorkScheduleType": "continuous",
+    "requiresActualContractConfirmation": true,
+    "occupationNameMustNotDetermineScheduleAlone": true
+  },
+  "requiredInputs": [
+    "actualOccupationName",
+    "weeklyContractHours",
+    "workScheduleType",
+    "daysInMonth",
+    "unpaidSickLeaveDaysInMonth",
+    "recognizedServiceYears",
+    "familyAllowanceEligibility",
+    "bonusEligibility"
+  ],
+  "payComponents": [
+    {
+      "id": "base_pay",
+      "name": "기본급(2유형)",
+      "amountWon": 2144500,
+      "frequency": "monthly",
+      "sickLeavePolicy": "prorate_for_unpaid_days"
+    },
+    {
+      "id": "meal_allowance",
+      "name": "급식비",
+      "amountWon": 160000,
+      "frequency": "monthly",
+      "eligibility": {
+        "weeklyContractHours": {"atLeast": 20}
+      },
+      "sickLeavePolicy": "prorate_for_unpaid_days"
+    },
+    {
+      "id": "longevity_allowance",
+      "name": "근속수당",
+      "frequency": "monthly",
+      "amountRule": {
+        "startsAtRecognizedServiceYears": 1,
+        "incrementWonPerYear": 41000,
+        "maximumRecognizedServiceYears": 24,
+        "maximumWon": 984000
+      },
+      "eligibility": "recognized_service_years_required",
+      "sickLeavePolicy": "prorate_for_unpaid_days"
+    },
+    {
+      "id": "family_allowance",
+      "name": "가족수당",
+      "frequency": "monthly",
+      "amountRule": {
+        "spouseWon": 40000,
+        "linealAscendantWonPerPerson": 20000,
+        "firstChildWon": 50000,
+        "secondChildWon": 80000,
+        "thirdOrLaterChildWonPerPerson": 120000
+      },
+      "eligibility": "verified_dependent_and_nonduplication_required",
+      "sickLeavePolicy": "prorate_for_unpaid_days"
+    },
+    {
+      "id": "holiday_bonus",
+      "name": "명절휴가비",
+      "annualAmountWon": 2144500,
+      "installments": [
+        {"event": "lunar_new_year", "amountWon": 1072250},
+        {"event": "chuseok", "amountWon": 1072250}
+      ],
+      "frequency": "twice_yearly",
+      "eligibility": "employment_and_continuous_service_condition_on_payment_date_required",
+      "sickLeavePolicy": "full_if_eligible"
+    },
+    {
+      "id": "regular_bonus",
+      "name": "정기상여금",
+      "annualAmountWon": 1000000,
+      "installments": [
+        {"month": 1, "referenceDay": 17, "amountWon": 500000},
+        {"month": 8, "referenceDay": 17, "amountWon": 500000}
+      ],
+      "frequency": "twice_yearly",
+      "eligibility": "three_months_continuous_service_on_reference_date",
+      "sickLeavePolicy": "full_if_eligible"
+    }
+  ],
+  "occupationSpecificAllowances": {
+    "standardEducationPracticeWorker": [],
+    "conditionalVariants": [
+      {
+        "variant": "교육실무사[전산]",
+        "componentId": "computer_practice_certificate_allowance",
+        "name": "전산실무사 자격수당",
+        "amountWon": 50000,
+        "frequency": "monthly",
+        "eligibility": "pre_integration_hire_and_qualifying_certificate_required",
+        "defaultIncluded": false,
+        "sickLeavePolicy": "prorate_for_unpaid_days"
+      }
+    ]
+  },
+  "formulaId": "SICK-LEAVE-GROSS-PAY-2026",
+  "calculationGuardrails": [
+    "교육실무사라는 직종명만으로 상시근무 여부를 확정하지 않음",
+    "근속수당은 인정된 전임경력과 현 경력을 합산한 근속연수로 계산",
+    "가족수당은 부양가족 요건과 중복수급 여부를 확인한 뒤 계산",
+    "명절휴가비와 정기상여금은 지급 기준일의 자격을 별도로 확인",
+    "세금, 4대보험 및 실수령액은 계산하지 않음"
+  ],
+  "testCases": [
+    {
+      "id": "EPW-SL-TC-001",
+      "description": "31일인 달에 무급 병가 1일, 근속수당·가족수당·상여금 없음",
+      "input": {
+        "daysInMonth": 31,
+        "unpaidSickLeaveDays": 1,
+        "weeklyContractHours": 40,
+        "recognizedServiceYears": 0
+      },
+      "expected": {
+        "basePayPaidWon": 2075323,
+        "mealAllowancePaidWon": 154839,
+        "grossPayWon": 2230162
+      }
+    },
+    {
+      "id": "EPW-SL-TC-002",
+      "description": "유급 병가 1일이고 다른 변동사항이 없음",
+      "input": {
+        "daysInMonth": 31,
+        "paidSickLeaveDays": 1,
+        "unpaidSickLeaveDays": 0,
+        "weeklyContractHours": 40,
+        "recognizedServiceYears": 0
+      },
+      "expected": {
+        "basePayPaidWon": 2144500,
+        "mealAllowancePaidWon": 160000,
+        "grossPayWon": 2304500
+      }
+    }
+  ],
+  "approvalRequirements": [
+    "confirm_exact_hr_occupation_code",
+    "confirm_work_schedule_type",
+    "confirm_allowance_eligibility",
+    "boundary_tests_pass"
+  ]
+}

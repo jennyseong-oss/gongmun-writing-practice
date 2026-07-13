@@ -1,0 +1,23 @@
+{
+  "schemaVersion": "1.0.0",
+  "id": "SEOUL-2026-COOKING-PRACTICE-WORKER",
+  "year": 2026,
+  "occupationName": "조리실무사",
+  "representativeUse": "monthly_vacation_nonworking_food_service",
+  "status": "profile_mapped_pending_payroll_review",
+  "sourceDocumentIds": ["SEOUL-WAGE-2026", "SEOUL-LEAVE-2026"],
+  "classification": {"payFramework": "monthly", "basePayType": "type_2", "defaultWorkScheduleType": "annual_workdays_vacation_nonworking", "requiresAnnualWorkdaysInput": true},
+  "payComponents": [
+    {"id": "base_pay", "amountWon": 2144500, "frequency": "monthly", "sickLeavePolicy": "prorate_for_all_unpaid_days"},
+    {"id": "meal_allowance", "amountWon": 160000, "frequency": "monthly", "sickLeavePolicy": "prorate_for_all_unpaid_days"},
+    {"id": "hazard_allowance", "amountWon": 70000, "frequency": "monthly", "eligibility": "direct_cooking_work", "sickLeavePolicy": "prorate_for_all_unpaid_days"},
+    {"id": "longevity_allowance", "frequency": "monthly", "sickLeavePolicy": "prorate_excluding_vacation_days_from_deduction"},
+    {"id": "family_allowance", "frequency": "monthly", "sickLeavePolicy": "prorate_excluding_vacation_days_from_deduction"},
+    {"id": "holiday_bonus", "annualAmountWon": 2144500, "frequency": "twice_yearly", "sickLeavePolicy": "full_if_eligible"},
+    {"id": "regular_bonus", "annualAmountWon": 1000000, "frequency": "twice_yearly", "sickLeavePolicy": "full_if_eligible"}
+  ],
+  "formulaId": "SICK-LEAVE-GROSS-PAY-2026",
+  "testCases": [{"id": "CPW-SL-TC-001", "input": {"daysInMonth": 31, "unpaidSickLeaveDays": 1}, "expected": {"basePayPaidWon": 2075323, "mealAllowancePaidWon": 154839, "hazardAllowancePaidWon": 67742, "grossPayWon": 2297904}}],
+  "approvalRequirements": ["confirm_direct_cooking_work", "confirm_annual_workdays", "confirm_school_calendar", "payroll_officer_manual_review"]
+}
+

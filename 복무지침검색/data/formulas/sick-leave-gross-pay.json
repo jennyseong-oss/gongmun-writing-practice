@@ -1,0 +1,104 @@
+{
+  "schemaVersion": "1.0.0",
+  "id": "SICK-LEAVE-GROSS-PAY-2026",
+  "title": "병가 세전 지급액 계산",
+  "status": "rule_extracted",
+  "effectiveYear": 2026,
+  "sourceDocumentIds": ["SEOUL-LEAVE-2026", "SEOUL-WAGE-2026"],
+  "sourceLocators": [
+    {"documentId": "SEOUL-LEAVE-2026", "printedPages": [52, 53, 155, 168]},
+    {"documentId": "SEOUL-WAGE-2026", "printedPages": [57, 58, 59]}
+  ],
+  "scope": {
+    "included": ["gross_pay", "base_pay", "eligible_allowances"],
+    "excluded": ["income_tax", "local_income_tax", "national_pension", "health_insurance", "long_term_care_insurance", "employment_insurance", "net_pay"]
+  },
+  "requiredInputs": [
+    "payFramework",
+    "occupationId",
+    "workScheduleType",
+    "daysInMonth",
+    "unpaidSickLeaveDaysInMonth",
+    "vacationDaysInMonth",
+    "basePay",
+    "eligibleAllowances",
+    "bonusEligibility"
+  ],
+  "rounding": {
+    "stage": "each_base_pay_and_allowance_component",
+    "unit": "won",
+    "method": "ceiling"
+  },
+  "formulas": [
+    {
+      "id": "GROSS-MONTHLY-STANDARD",
+      "appliesWhen": {"payFramework": "monthly", "vacationNonWorkingException": false},
+      "componentFormula": "ceil(componentAmount * (daysInMonth - deductionDays) / daysInMonth)",
+      "grossFormula": "sum(proratedComponents) + sum(fullPayComponents)"
+    },
+    {
+      "id": "GROSS-VACATION-NONWORKING-BASE",
+      "appliesWhen": {"payFramework": "monthly", "workScheduleType": "vacation_nonworking"},
+      "componentTypes": ["base_pay", "standard_prorated_allowance"],
+      "componentFormula": "ceil(componentAmount * (daysInMonth - allDeductionDays) / daysInMonth)"
+    },
+    {
+      "id": "GROSS-VACATION-NONWORKING-LONGEVITY-FAMILY",
+      "appliesWhen": {"payFramework": "monthly", "workScheduleType": "vacation_nonworking"},
+      "componentTypes": ["longevity_allowance", "family_allowance"],
+      "componentFormula": "ceil(componentAmount * (daysInMonth - deductionDaysExcludingVacation) / daysInMonth)"
+    }
+  ],
+  "componentPolicies": {
+    "prorated": [
+      "base_pay",
+      "longevity_allowance",
+      "family_allowance",
+      "meal_allowance",
+      "librarian_special_duty_allowance",
+      "cook_license_allowance",
+      "food_service_hazard_allowance",
+      "computer_practice_certificate_allowance",
+      "special_education_support_allowance",
+      "license_additional_allowance",
+      "nutritionist_hazard_allowance",
+      "nutritionist_dietary_guidance_allowance"
+    ],
+    "fullWhenEligibilitySatisfied": ["holiday_bonus", "regular_bonus"],
+    "separateModule": ["occupational_injury_top_up"]
+  },
+  "guardrails": [
+    "Do not infer pay framework from occupation name alone.",
+    "Do not calculate when allowance eligibility is unknown.",
+    "Do not calculate tax, social insurance, or net pay.",
+    "Do not count paid sick leave as an unpaid deduction day.",
+    "Return 담당자 검토 필요 when source applicability conflicts."
+  ],
+  "testCases": [
+    {
+      "id": "GROSS-TC-001",
+      "description": "31일 월, 기본급 2,144,500원, 무급 병가 1일, 다른 수당 없음",
+      "input": {"daysInMonth": 31, "deductionDays": 1, "basePay": 2144500},
+      "expected": {"basePayPaid": 2075323, "formula": "ceil(2144500 * 30 / 31)"}
+    },
+    {
+      "id": "GROSS-TC-002",
+      "description": "호봉제근로자가 연간 병가 41일째를 사용하지만 연 60일 유급 범위인 경우",
+      "input": {"employmentPayFramework": "hobongje", "ordinarySickLeaveDayOfYear": 41},
+      "expected": {"unpaidSickLeaveDeductionDays": 0}
+    },
+    {
+      "id": "GROSS-TC-003",
+      "description": "무기계약근로자가 연간 병가 41일째를 사용하여 무급 병가 1일이 발생한 경우",
+      "input": {"employmentTermType": "indefinite", "ordinarySickLeaveDayOfYear": 41},
+      "expected": {"unpaidSickLeaveDeductionDays": 1}
+    }
+  ],
+  "approvalRequirements": [
+    "six_representative_profile_allowance_mapping",
+    "manual_payroll_review",
+    "boundary_test_pass",
+    "source_cross_check"
+  ]
+}
+

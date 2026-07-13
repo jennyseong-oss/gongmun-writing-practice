@@ -1,0 +1,146 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="서울특별시교육청 2026년 교육공무직원 병가 및 세전 급여 영향 검증 도구">
+  <title>서울교육공무직 복무·급여 도우미</title>
+  <link rel="stylesheet" href="app.css">
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand-mark" aria-hidden="true">서</div>
+    <div>
+      <p class="eyebrow">서울특별시교육청 2026년 공개 지침 기준</p>
+      <h1>복무·급여 도우미</h1>
+    </div>
+    <span class="status-pill">검증용 MVP</span>
+  </header>
+
+  <main class="page-shell">
+    <section class="hero">
+      <div>
+        <p class="eyebrow">첫 구조화 항목 · 병가</p>
+        <h2>병가가 이번 달 세전 급여에 미치는 영향을 확인하세요</h2>
+        <p>직종과 실제 계약조건을 차례로 확인하고, 유급·무급 병가와 항목별 계산 근거를 함께 보여드립니다.</p>
+      </div>
+      <div class="hero-note">
+        <strong>안전 원칙</strong>
+        <span>세금·4대보험·실수령액은 계산하지 않습니다. 입력이 충돌하면 금액 대신 담당자 확인 항목을 안내합니다.</span>
+      </div>
+    </section>
+
+    <div class="workspace">
+      <form id="calculatorForm" class="panel form-panel" novalidate>
+        <div class="section-heading">
+          <span>1</span>
+          <div><h3>근로자 유형</h3><p>직종명과 실제 계약조건을 함께 확인합니다.</p></div>
+        </div>
+
+        <label class="field">
+          <span>대표 프로필</span>
+          <select id="profileId" name="profileId"></select>
+        </label>
+
+        <div class="segmented" role="group" aria-label="급여 입력 방식">
+          <label><input type="radio" name="inputMode" value="standard" checked><span>2026 표준금액</span></label>
+          <label><input type="radio" name="inputMode" value="actual"><span>급여명세 직접 입력</span></label>
+        </div>
+
+        <div class="two-column">
+          <label class="field">
+            <span>근로계약 유형</span>
+            <select id="employmentType" name="employmentType">
+              <option value="indefinite">무기계약</option>
+              <option value="fixed">기간제</option>
+              <option value="ultra-short">초단시간</option>
+            </select>
+          </label>
+          <label class="field" id="contractMonthsField">
+            <span>계속근로 개월</span>
+            <input id="contractMonths" name="contractMonths" type="number" min="0" max="120" step="0.1" value="12">
+          </label>
+        </div>
+
+        <label class="field" id="scheduleField">
+          <span>근무형태</span>
+          <select id="scheduleType" name="scheduleType">
+            <option value="continuous">상시근무</option>
+            <option value="vacation">연간근무일수제·방학 중 비근무</option>
+          </select>
+        </label>
+
+        <div class="section-heading">
+          <span>2</span>
+          <div><h3>병가와 계산 월</h3><p>이번 병가 중 무급으로 전환되는 일수를 계산합니다.</p></div>
+        </div>
+
+        <div class="two-column">
+          <label class="field">
+            <span>이번 병가 전 누적 사용일</span>
+            <input id="previousSickDays" name="previousSickDays" type="number" min="0" step="0.125" value="0">
+          </label>
+          <label class="field">
+            <span>이번 달 병가 사용일</span>
+            <input id="currentSickDays" name="currentSickDays" type="number" min="0" step="0.125" value="1">
+          </label>
+          <label class="field">
+            <span>계산 월 총일수</span>
+            <select id="daysInMonth" name="daysInMonth">
+              <option>28</option><option>29</option><option>30</option><option selected>31</option>
+            </select>
+          </label>
+          <label class="field vacation-only hidden">
+            <span>무급 병가 중 방학과 겹친 일수</span>
+            <input id="unpaidDaysInVacation" name="unpaidDaysInVacation" type="number" min="0" step="0.125" value="0">
+          </label>
+        </div>
+
+        <div id="hourlyFields" class="hidden">
+          <div class="section-heading compact">
+            <span>3</span>
+            <div><h3>근로시간</h3><p>실제근로·유급휴일·유급 병가시간을 입력합니다.</p></div>
+          </div>
+          <div class="two-column">
+            <label class="field"><span>적용 시급</span><input id="hourlyWage" type="number" min="0" step="1" value="12570"></label>
+            <label class="field"><span>주 소정근로시간</span><input id="weeklyHours" type="number" min="0" max="40" step="0.5" value="20"></label>
+            <label class="field"><span>1일 소정근로시간</span><input id="dailyHours" type="number" min="0" max="8" step="0.5" value="4"></label>
+            <label class="field"><span>이번 달 실제근로시간</span><input id="actualWorkHours" type="number" min="0" step="0.5" value="60"></label>
+            <label class="field"><span>유급휴일시간</span><input id="paidHolidayHours" type="number" min="0" step="0.5" value="12"></label>
+          </div>
+        </div>
+
+        <div id="monthlyFields">
+          <div class="section-heading compact">
+            <span>3</span>
+            <div><h3>세전 급여항목</h3><p>표준금액을 확인하거나 실제 명세 금액으로 바꾸세요.</p></div>
+          </div>
+          <div id="componentFields" class="component-list"></div>
+          <div class="bonus-row">
+            <label><input id="includeHolidayBonus" type="checkbox"><span>이번 달 명절휴가비 지급</span></label>
+            <label><input id="includeRegularBonus" type="checkbox"><span>이번 달 정기상여금 지급</span></label>
+          </div>
+        </div>
+
+        <button class="primary-button" type="submit">세전 지급액 계산하기</button>
+      </form>
+
+      <aside class="panel result-panel" aria-live="polite">
+        <div id="resultEmpty" class="result-empty">
+          <div class="empty-icon">₩</div>
+          <h3>조건을 입력해 계산해 보세요</h3>
+          <p>결과에는 병가 구간, 항목별 계산식, 세전 합계와 확인할 사항이 표시됩니다.</p>
+        </div>
+        <div id="resultContent" class="hidden"></div>
+      </aside>
+    </div>
+
+    <section class="source-strip">
+      <div><strong>사용 근거</strong><span>2026 교육공무직원 복무지침 · 임금업무 등 처리지침 · 서울시교육청 생활임금 안내</span></div>
+      <p>본 결과는 업무지원용 예상값입니다. 최종 지급액은 소속 기관 급여담당자가 확인해야 합니다.</p>
+    </section>
+  </main>
+
+  <script type="module" src="app.js"></script>
+</body>
+</html>

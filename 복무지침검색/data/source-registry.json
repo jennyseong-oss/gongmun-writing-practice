@@ -1,0 +1,125 @@
+{
+  "schemaVersion": "1.0.0",
+  "registryAsOf": "2026-07-12",
+  "scope": {
+    "authority": "서울특별시교육청",
+    "year": 2026,
+    "institutions": ["공립 유치원", "공립학교", "교육행정기관"],
+    "publicSourcesOnly": true,
+    "internalDocuments": {
+      "includedInMvp": false,
+      "futureAccess": "admin_only",
+      "separateIndexRequired": true
+    }
+  },
+  "statuses": ["source_acquired", "posting_verified", "verification_pending", "approved_for_use", "superseded"],
+  "sources": [
+    {
+      "id": "SEOUL-LEAVE-2026",
+      "title": "2026 서울특별시교육감 소속 교육공무직원 복무지침",
+      "type": "leave_guideline",
+      "authority": "서울특별시교육청",
+      "priority": 40,
+      "postingDate": "2026-04-30",
+      "correctionAsOf": "2026-05-11",
+      "status": ["source_acquired", "posting_verified", "verification_pending"],
+      "officialUrl": "https://buseo.sen.go.kr/buseo/bu08/user/bbs/BD_selectBbs.do?q_bbsDocNo=20260430172845938&q_bbsSn=1232",
+      "localFile": "../../2026 서울특별시교육감 소속 교육공무직원 복무지침.pdf",
+      "pageCount": 308,
+      "sha256": "29044371250E2D8D4966876084379666BB2C7ED85BD42AB4708AE08E1E8FF12D",
+      "allowedUses": ["retrieval", "citation", "rule_extraction"],
+      "calculationEnabled": false
+    },
+    {
+      "id": "SEOUL-WAGE-2026",
+      "title": "2026 서울특별시교육감 소속 교육공무직원 임금업무 등 처리 지침",
+      "type": "wage_guideline",
+      "authority": "서울특별시교육청",
+      "priority": 40,
+      "documentDate": "2026-05-12",
+      "postingDate": "2026-05-13",
+      "status": ["source_acquired", "posting_verified", "verification_pending"],
+      "officialUrl": "https://buseo.sen.go.kr/buseo/bu08/user/bbs/BD_selectBbs.do?q_bbsDocNo=20260513091014297&q_bbsSn=1232",
+      "localFile": "../../2026 서울특별시교육감 소속 교육공무직원 임금업무 등 처리지침(최종_0512)압축.pdf",
+      "pageCount": 190,
+      "sha256": "08C09FDEE916EFE9B205DFB7FB044E1EE3512EBCAF8FE7FCF67C6E2CBD520D22",
+      "allowedUses": ["retrieval", "citation", "rule_extraction"],
+      "calculationEnabled": false
+    },
+    {
+      "id": "COLLECTIVE-WAGE-2025",
+      "title": "2025년 교육부 및 시도교육청과 전국학교비정규직연대회의 간 단체(임금)협약",
+      "type": "collective_wage_agreement",
+      "authority": "교육부·시도교육청·전국학교비정규직연대회의",
+      "priority": 20,
+      "agreementDate": "2026-02-11",
+      "postingDate": "2026-02-13",
+      "status": ["posting_verified", "verification_pending"],
+      "officialUrl": "https://buseo.sen.go.kr/buseo/bu08/user/bbs/BD_selectBbs.do?q_bbsDocNo=20260213103425707&q_bbsSn=1232",
+      "allowedUses": ["catalog_only"],
+      "calculationEnabled": false
+    },
+    {
+      "id": "SEOUL-LIVING-WAGE-2026",
+      "title": "2026년 서울특별시교육청 생활임금 안내",
+      "type": "living_wage_notice",
+      "authority": "서울특별시교육청",
+      "priority": 50,
+      "postingDate": "2025-09-24",
+      "status": ["posting_verified", "verification_pending"],
+      "officialUrl": "https://buseo.sen.go.kr/buseo/bu08/user/bbs/BD_selectBbs.do?q_bbsDocNo=20250924170004508&q_bbsSn=1232",
+      "publishedValues": {
+        "hourlyWon": 12570,
+        "dailyWon": 100560,
+        "dailyHours": 8
+      },
+      "applicabilityNote": "호봉제·월급제가 아닌 일급제 또는 시급제 교육공무직원. 기관 유형별 적용기간 확인 필요.",
+      "allowedUses": ["retrieval", "citation"],
+      "calculationEnabled": false
+    },
+    {
+      "id": "SEOUL-OPS-2026",
+      "title": "2026년 교육공무직원 관리운영계획",
+      "type": "operations_plan",
+      "authority": "서울특별시교육청",
+      "priority": 50,
+      "postingDate": "2026-05-29",
+      "status": ["posting_verified", "verification_pending"],
+      "officialUrl": "https://baro.sen.go.kr/fus/MI000000000000000021/board/BO00000004/CD100101/list0010v.do",
+      "allowedUses": ["catalog_only"],
+      "calculationEnabled": false
+    },
+    {
+      "id": "SEOUL-FAQ-2026",
+      "title": "서울특별시교육청 교육행정지원시스템 공식 질문·답변 및 주요질문사례",
+      "type": "official_faq",
+      "authority": "서울특별시교육청",
+      "priority": 70,
+      "status": ["verification_pending"],
+      "officialUrl": "https://baro.sen.go.kr/",
+      "allowedUses": ["interpretation_support"],
+      "calculationEnabled": false
+    },
+    {
+      "id": "NATIONAL-LAW",
+      "title": "근로기준법 및 관련 시행령·시행규칙 등",
+      "type": "law_collection",
+      "authority": "대한민국",
+      "priority": 10,
+      "status": ["verification_pending"],
+      "allowedUses": ["catalog_only"],
+      "calculationEnabled": false
+    },
+    {
+      "id": "SEOUL-WORK-RULES",
+      "title": "서울특별시교육감 소속 교육공무직원 취업규칙",
+      "type": "work_rules",
+      "authority": "서울특별시교육청",
+      "priority": 30,
+      "status": ["verification_pending"],
+      "allowedUses": ["catalog_only"],
+      "calculationEnabled": false
+    }
+  ]
+}
+
