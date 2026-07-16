@@ -68,6 +68,9 @@ export function roundHalfUp(value) {
 }
 
 export function getSickLeaveAllocation({ employmentType, contractMonths, previousSickDays, currentSickDays, paidLimit = 40 }) {
+  if (previousSickDays < 0 || currentSickDays < 0) {
+    throw new Error("병가 사용일수는 음수일 수 없습니다. 입력을 확인해 주세요.");
+  }
   if (employmentType === "ultra-short") {
     return { eligible: false, totalLimit: 0, paidLimit: 0, paidCurrent: 0, unpaidCurrent: currentSickDays };
   }
@@ -92,6 +95,9 @@ function ceilWon(value) {
 
 function calculateMonthly(input) {
   const { profile, daysInMonth, scheduleType, allocation } = input;
+  if (allocation.unpaidCurrent > daysInMonth) {
+    throw new Error("이번 달 무급 병가일수가 계산 월 총일수보다 많습니다. 병가 사용일과 계산 월을 확인해 주세요.");
+  }
   const warnings = [];
   if (profile.reviewStatus !== "approved") warnings.push("이 대표 프로필은 급여담당자 검토가 완료되지 않았습니다. 결과는 검증용 예상값이며 공개 계산에는 사용할 수 없습니다.");
   if (!allocation.eligible) warnings.push("현재 계약조건에서는 일반 병가가 부여되지 않을 수 있습니다.");

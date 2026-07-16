@@ -33,4 +33,20 @@ const ultraShortResult = calculateGrossPay({
 assert.equal(ultraShortResult.gross, 780000);
 assert.match(ultraShortResult.warnings.join(" "), /15시간 미만/);
 
+assert.throws(
+  () => getSickLeaveAllocation({ employmentType: "indefinite", contractMonths: 12, previousSickDays: 0, currentSickDays: -1, paidLimit: 40 }),
+  /음수/
+);
+
+const overLimitAllocation = getSickLeaveAllocation({ employmentType: "indefinite", contractMonths: 12, previousSickDays: 0, currentSickDays: 100, paidLimit: 40 });
+assert.throws(
+  () => calculateGrossPay({
+    profile: PROFILES.education, inputMode: "standard", employmentType: "indefinite", currentSickDays: 100, previousSickDays: 0,
+    daysInMonth: 31, scheduleType: "continuous", unpaidDaysInVacation: 0,
+    components: PROFILES.education.components.slice(0, 2), includeHolidayBonus: false, includeRegularBonus: false,
+    allocation: overLimitAllocation,
+  }),
+  /계산 월 총일수보다 많습니다/
+);
+
 console.log("calculator tests passed");

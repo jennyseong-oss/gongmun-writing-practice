@@ -67,6 +67,13 @@ function clearResult() {
   $("#resultContent").innerHTML = "";
 }
 
+function renderError(message) {
+  $("#resultEmpty").classList.add("hidden");
+  const target = $("#resultContent");
+  target.classList.remove("hidden");
+  target.innerHTML = `<div class="error-box">${message}</div>`;
+}
+
 function collectComponents() {
   return [...document.querySelectorAll("[data-component-id]")].map((input) => {
     const definition = currentProfile().components.find((item) => item.id === input.dataset.componentId);
@@ -160,9 +167,13 @@ form.addEventListener("change", (event) => {
 
 form.addEventListener("submit", (event) => {
   event.preventDefault();
-  const input = buildInput();
-  const result = calculateGrossPay(input);
-  renderResult(result, input);
+  try {
+    const input = buildInput();
+    const result = calculateGrossPay(input);
+    renderResult(result, input);
+  } catch (error) {
+    renderError(error.message);
+  }
 });
 
 renderProfile();

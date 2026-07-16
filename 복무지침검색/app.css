@@ -81,10 +81,11 @@ input[readonly] { background: #f3f5f4; color: #455149; }
 .leave-summary span { display: block; color: var(--muted); font-size: 11px; }
 .leave-summary strong { font-size: 17px; }
 .danger { color: var(--danger); }
-.warning-box, .ok-box { margin: 12px 0; padding: 13px 14px; border-radius: 12px; font-size: 12px; }
+.warning-box, .ok-box, .error-box { margin: 12px 0; padding: 13px 14px; border-radius: 12px; font-size: 12px; }
 .warning-box { background: var(--amber-soft); color: #734000; }
 .warning-box ul { margin: 6px 0 0; padding-left: 17px; }
 .ok-box { background: var(--green-soft); color: var(--green-dark); }
+.error-box { background: #fdecea; color: var(--danger); font-weight: 700; }
 .result-lines { margin-top: 18px; border-top: 1px solid var(--line); }
 .result-line { display: grid; grid-template-columns: 1fr auto; gap: 15px; padding: 12px 0; border-bottom: 1px solid var(--line); }
 .result-line span { display: grid; }
