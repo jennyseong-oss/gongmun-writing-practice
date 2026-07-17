@@ -49,4 +49,16 @@ assert.throws(
   /계산 월 총일수보다 많습니다/
 );
 
+const bonusesWithUnpaidDayResult = calculateGrossPay({
+  profile: PROFILES.education, inputMode: "standard", employmentType: "indefinite", currentSickDays: 1, previousSickDays: 40,
+  daysInMonth: 31, scheduleType: "continuous", unpaidDaysInVacation: 0,
+  components: PROFILES.education.components.slice(0, 2), includeHolidayBonus: true, includeRegularBonus: true,
+  allocation: allocation40,
+});
+const holidayBonusLine = bonusesWithUnpaidDayResult.lines.find((line) => line.id === "holidayBonus");
+const regularBonusLine = bonusesWithUnpaidDayResult.lines.find((line) => line.id === "regularBonus");
+assert.equal(holidayBonusLine.paid, PROFILES.education.holidayBonus, "무급 병가가 있어도 명절휴가비는 일할계산되지 않아야 합니다");
+assert.equal(regularBonusLine.paid, PROFILES.education.regularBonus, "무급 병가가 있어도 정기상여금은 일할계산되지 않아야 합니다");
+assert.equal(bonusesWithUnpaidDayResult.gross, 3802412);
+
 console.log("calculator tests passed");
