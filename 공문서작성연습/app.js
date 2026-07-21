@@ -1,9 +1,28 @@
-import { checkAll } from "./checker.js";
+import { checkAll as checkAllA } from "./checker.js";
+import { checkAllB } from "./checker-b.js";
 
-const BEST_SCORE_KEY = "gongmun-a-quiz-best";
-const PRACTICE_COUNT_KEY = "gongmun-a-practice-count";
+const MODULES = {
+  A: {
+    title: "본문 내용",
+    rulesFile: "data/rules.json",
+    quizFile: "data/quiz.json",
+    check: checkAllA,
+    defaultPlaceholder:
+      "예) 2026학년도 신규자 직무연수 참가자를 다음과 같이 모집합니다.\n\n붙임  참가신청서 1부.  끝.",
+    defaultHint: "제목 아래 본문만 입력해도 됩니다. 붙임과 끝 표시까지 포함해서 써 보면 더 많은 항목을 검사할 수 있습니다.",
+  },
+  B: {
+    title: "항목 번호 체계",
+    rulesFile: "data/rules-b.json",
+    quizFile: "data/quiz-b.json",
+    check: checkAllB,
+    defaultPlaceholder: "예) 1. 목적\n  가. 신규 임용자의 행정업무 이해도 제고\n2. 일시",
+    defaultHint: "항목 번호와 들여쓰기를 포함해 두 단계 이상으로 써 보세요.",
+  },
+};
 
 const state = {
+  moduleId: "A",
   rules: [],
   quiz: [],
   quizIndex: 0,
@@ -20,21 +39,25 @@ function escapeHtml(value) {
   }[ch]));
 }
 
+function storageKey(suffix) {
+  return `gongmun-${state.moduleId.toLowerCase()}-${suffix}`;
+}
+
 function getBestScore() {
-  return Number(localStorage.getItem(BEST_SCORE_KEY) || 0);
+  return Number(localStorage.getItem(storageKey("quiz-best")) || 0);
 }
 
 function saveBestScore(pct) {
-  if (pct > getBestScore()) localStorage.setItem(BEST_SCORE_KEY, String(pct));
+  if (pct > getBestScore()) localStorage.setItem(storageKey("quiz-best"), String(pct));
 }
 
 function getPracticeCount() {
-  return Number(localStorage.getItem(PRACTICE_COUNT_KEY) || 0);
+  return Number(localStorage.getItem(storageKey("practice-count")) || 0);
 }
 
 function bumpPracticeCount() {
   const next = getPracticeCount() + 1;
-  localStorage.setItem(PRACTICE_COUNT_KEY, String(next));
+  localStorage.setItem(storageKey("practice-count"), String(next));
   return next;
 }
 
@@ -129,7 +152,7 @@ function renderQuizSummary() {
   saveBestScore(pct);
   summary.innerHTML = `
     <div class="quiz-summary">
-      <p>모듈 A 퀴즈 결과</p>
+      <p>모듈 ${state.moduleId} 퀴즈 결과</p>
       <p class="score">${state.quizScore} / ${total}</p>
       <p>정답률 ${pct}% · 최고 기록 ${getBestScore()}%</p>
       <button class="ghost-button" id="quizRetryButton" type="button">다시 풀기</button>
@@ -176,7 +199,7 @@ function bindPractice() {
       report.innerHTML = `<p class="module-intro">본문을 입력한 뒤 첨삭하기를 눌러 주세요.</p>`;
       return;
     }
-    renderPracticeReport(checkAll(text));
+    renderPracticeReport(MODULES[state.moduleId].check(text));
     const count = bumpPracticeCount();
     document.getElementById("practiceCount").textContent = `지금까지 ${count}번 첨삭해 봤어요.`;
   });
@@ -197,20 +220,62 @@ function bindTabs() {
   });
 }
 
-async function init() {
+function switchToLearnTab() {
+  document.querySelectorAll(".tab-button").forEach((b) => {
+    const isLearn = b.dataset.tab === "learn";
+    b.classList.toggle("active", isLearn);
+    b.setAttribute("aria-selected", String(isLearn));
+  });
+  document.querySelectorAll(".tab-panel").forEach((panel) => {
+    panel.classList.toggle("hidden", panel.id !== "tab-learn");
+  });
+}
+
+async function loadModule(moduleId) {
+  const module = MODULES[moduleId];
+  if (!module) return;
+  state.moduleId = moduleId;
+
   const [rulesData, quizData] = await Promise.all([
-    fetch("data/rules.json").then((res) => res.json()),
-    fetch("data/quiz.json").then((res) => res.json()),
+    fetch(module.rulesFile).then((res) => res.json()),
+    fetch(module.quizFile).then((res) => res.json()),
   ]);
   state.rules = rulesData.rules;
   state.quiz = quizData;
+  state.quizIndex = 0;
+  state.quizScore = 0;
 
+  document.getElementById("modulePill").textContent = `모듈 ${moduleId} · ${module.title}`;
   document.getElementById("moduleIntro").textContent = rulesData.moduleIntro;
+  document.getElementById("practiceHeading").textContent = `${rulesData.moduleTitle} 부분을 직접 써 보세요`;
+  document.getElementById("practiceHint").textContent = rulesData.practiceHint || module.defaultHint;
+  document.getElementById("practiceInput").placeholder = rulesData.practicePlaceholder || module.defaultPlaceholder;
+  document.getElementById("practiceInput").value = "";
+  document.getElementById("practiceReport").classList.add("hidden");
+  document.getElementById("practiceReport").innerHTML = "";
+
   renderRuleCards();
   renderQuizQuestion();
   updatePracticeCount();
+  switchToLearnTab();
+}
+
+function bindModuleRail() {
+  document.querySelectorAll(".module-chip[data-module]").forEach((chip) => {
+    chip.addEventListener("click", () => {
+      if (chip.disabled || chip.dataset.module === state.moduleId) return;
+      document.querySelectorAll(".module-chip").forEach((c) => c.classList.remove("active"));
+      chip.classList.add("active");
+      loadModule(chip.dataset.module);
+    });
+  });
+}
+
+async function init() {
   bindTabs();
   bindPractice();
+  bindModuleRail();
+  await loadModule(state.moduleId);
 }
 
 init();

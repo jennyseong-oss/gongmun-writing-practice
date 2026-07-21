@@ -14,7 +14,7 @@
       <p class="eyebrow">행정업무운영편람(2025) · 규정·시행규칙 기준</p>
       <h1>공문서 작성 연습</h1>
     </div>
-    <span class="status-pill">모듈 A · 본문 내용</span>
+    <span class="status-pill" id="modulePill">모듈 A · 본문 내용</span>
   </header>
 
   <main class="page-shell">
@@ -32,7 +32,7 @@
 
     <nav class="module-rail" aria-label="학습 모듈">
       <button class="module-chip active" type="button" data-module="A">A. 본문 내용</button>
-      <button class="module-chip disabled" type="button" disabled title="준비 중">B. 항목 번호 <span class="soon">준비 중</span></button>
+      <button class="module-chip" type="button" data-module="B">B. 항목 번호</button>
       <button class="module-chip disabled" type="button" disabled title="준비 중">C. 날짜·숫자·금액 <span class="soon">준비 중</span></button>
       <button class="module-chip disabled" type="button" disabled title="준비 중">D. 용어·표현 <span class="soon">준비 중</span></button>
       <button class="module-chip disabled" type="button" disabled title="준비 중">E. 용지·여백·글자 <span class="soon">준비 중</span></button>
@@ -58,8 +58,8 @@
 
       <section id="tab-practice" class="tab-panel hidden" role="tabpanel">
         <div class="practice-intro">
-          <h3>기안문 본문을 직접 써 보세요</h3>
-          <p>제목 아래 본문만 입력해도 됩니다. 붙임과 끝 표시까지 포함해서 써 보면 더 많은 항목을 검사할 수 있습니다.</p>
+          <h3 id="practiceHeading">기안문 본문을 직접 써 보세요</h3>
+          <p id="practiceHint">제목 아래 본문만 입력해도 됩니다. 붙임과 끝 표시까지 포함해서 써 보면 더 많은 항목을 검사할 수 있습니다.</p>
         </div>
         <textarea id="practiceInput" class="practice-textarea" rows="10" placeholder="예) 2026학년도 신규자 직무연수 참가자를 다음과 같이 모집합니다.&#10;&#10;붙임  참가신청서 1부.  끝."></textarea>
         <div class="practice-actions">
