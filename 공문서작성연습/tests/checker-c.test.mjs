@@ -1,0 +1,112 @@
+import { test } from "node:test";
+import assert from "node:assert/strict";
+import { checkC1, checkC2, checkC3, checkC4, checkAllC } from "../checker-c.js";
+
+test("C1: 올바른 날짜 표기는 통과", () => {
+  const result = checkC1("행사는 2026. 4. 15.에 진행합니다.");
+  assert.equal(result.status, "pass");
+});
+
+test("C1: '년/월/일' 표기는 경고", () => {
+  const result = checkC1("2026년 4월 15일에 진행합니다.");
+  assert.equal(result.status, "warn");
+});
+
+test("C1: 온점 뒤 띄어쓰기가 없으면 경고", () => {
+  const result = checkC1("2026.4.15에 진행합니다.");
+  assert.equal(result.status, "warn");
+});
+
+test("C1: 월·일 앞에 0을 붙이면 경고", () => {
+  const result = checkC1("2026. 04. 15.에 진행합니다.");
+  assert.equal(result.status, "warn");
+});
+
+test("C1: 날짜 범위 물결표 앞뒤에 공백이 있으면 경고", () => {
+  const result = checkC1("행사 기간은 4. 23. ~ 6. 15. 입니다.");
+  assert.equal(result.status, "warn");
+});
+
+test("C1: 날짜 표기가 없으면 안내(info)", () => {
+  const result = checkC1("특별한 날짜 언급이 없는 문장입니다.");
+  assert.equal(result.status, "info");
+});
+
+test("C2: 올바른 시간 표기는 통과", () => {
+  const result = checkC2("행사는 15:20에 시작합니다.");
+  assert.equal(result.status, "pass");
+});
+
+test("C2: 한글 시각 표기는 경고", () => {
+  const result = checkC2("오후 3시 20분에 시작합니다.");
+  assert.equal(result.status, "warn");
+});
+
+test("C2: AM/PM 표기는 경고", () => {
+  const result = checkC2("9:30 AM에 시작합니다.");
+  assert.equal(result.status, "warn");
+});
+
+test("C2: 물결표 앞뒤 공백이 있으면 경고", () => {
+  const result = checkC2("09:00 ~ 18:00 운영합니다.");
+  assert.equal(result.status, "warn");
+});
+
+test("C2: 시가 한 자리 숫자면 경고", () => {
+  const result = checkC2("9:00부터 진행합니다.");
+  assert.equal(result.status, "warn");
+});
+
+test("C2: 시간 표기가 없으면 안내(info)", () => {
+  const result = checkC2("오늘 회의가 있습니다.");
+  assert.equal(result.status, "info");
+});
+
+test("C3: 아라비아 숫자는 통과", () => {
+  const result = checkC3("참가 인원은 30명입니다.");
+  assert.equal(result.status, "pass");
+});
+
+test("C3: 한글 숫자는 경고", () => {
+  const result = checkC3("참가 인원은 서른 명입니다.");
+  assert.equal(result.status, "warn");
+});
+
+test("C3: 숫자가 없으면 안내(info)", () => {
+  const result = checkC3("특별한 숫자가 없는 문장입니다.");
+  assert.equal(result.status, "info");
+});
+
+test("C4: 쉼표·한글 병기·'일' 접두가 모두 맞으면 통과", () => {
+  const result = checkC4("금1,500,000원(금일백오십만원)입니다.");
+  assert.equal(result.status, "pass");
+});
+
+test("C4: 천 단위 쉼표가 없으면 경고", () => {
+  const result = checkC4("금1500000원(금일백오십만원)입니다.");
+  assert.equal(result.status, "warn");
+});
+
+test("C4: 한글 병기가 없으면 경고", () => {
+  const result = checkC4("1,500,000원 정도가 필요합니다.");
+  assert.equal(result.status, "warn");
+});
+
+test("C4: 한글 병기에서 '일'이 빠지면 경고", () => {
+  const result = checkC4("금1,500,000원(금백오십만원)입니다.");
+  assert.equal(result.status, "warn");
+});
+
+test("C4: 금액 표기가 없으면 안내(info)", () => {
+  const result = checkC4("예산 관련 언급이 없습니다.");
+  assert.equal(result.status, "info");
+});
+
+test("checkAllC: C1~C4를 순서대로 반환", () => {
+  const results = checkAllC("행사는 2026. 4. 15. 15:20에 진행하며, 참가 인원은 30명이고 예산은 금1,500,000원(금일백오십만원)입니다.");
+  assert.equal(results.length, 4);
+  assert.deepEqual(
+    results.map((r) => r.ruleId),
+    ["C1", "C2", "C3", "C4"],
+  );
+});

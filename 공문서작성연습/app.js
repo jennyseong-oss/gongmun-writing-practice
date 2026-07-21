@@ -1,5 +1,6 @@
 import { checkAll as checkAllA } from "./checker.js";
 import { checkAllB } from "./checker-b.js";
+import { checkAllC } from "./checker-c.js";
 
 const MODULES = {
   A: {
@@ -18,6 +19,15 @@ const MODULES = {
     check: checkAllB,
     defaultPlaceholder: "예) 1. 목적\n  가. 신규 임용자의 행정업무 이해도 제고\n2. 일시",
     defaultHint: "항목 번호와 들여쓰기를 포함해 두 단계 이상으로 써 보세요.",
+  },
+  C: {
+    title: "날짜·숫자·금액",
+    rulesFile: "data/rules-c.json",
+    quizFile: "data/quiz-c.json",
+    check: checkAllC,
+    defaultPlaceholder:
+      "예) 2026. 8. 10.부터 8. 14.까지 09:00~18:00 운영합니다.\n\n소요 예산은 금1,500,000원(금일백오십만원)입니다.",
+    defaultHint: "날짜·시간·금액 표기를 하나 이상 포함해 써 보세요.",
   },
 };
 
