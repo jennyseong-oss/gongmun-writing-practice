@@ -1,0 +1,216 @@
+import { checkAll } from "./checker.js";
+
+const BEST_SCORE_KEY = "gongmun-a-quiz-best";
+const PRACTICE_COUNT_KEY = "gongmun-a-practice-count";
+
+const state = {
+  rules: [],
+  quiz: [],
+  quizIndex: 0,
+  quizScore: 0,
+};
+
+function escapeHtml(value) {
+  return String(value).replace(/[&<>"']/g, (ch) => ({
+    "&": "&amp;",
+    "<": "&lt;",
+    ">": "&gt;",
+    '"': "&quot;",
+    "'": "&#39;",
+  }[ch]));
+}
+
+function getBestScore() {
+  return Number(localStorage.getItem(BEST_SCORE_KEY) || 0);
+}
+
+function saveBestScore(pct) {
+  if (pct > getBestScore()) localStorage.setItem(BEST_SCORE_KEY, String(pct));
+}
+
+function getPracticeCount() {
+  return Number(localStorage.getItem(PRACTICE_COUNT_KEY) || 0);
+}
+
+function bumpPracticeCount() {
+  const next = getPracticeCount() + 1;
+  localStorage.setItem(PRACTICE_COUNT_KEY, String(next));
+  return next;
+}
+
+function statusLabel(status) {
+  return { pass: "통과", warn: "확인 필요", info: "참고" }[status] || status;
+}
+
+function renderRuleCards() {
+  const container = document.getElementById("ruleCards");
+  container.innerHTML = state.rules
+    .map(
+      (rule) => `
+    <article class="rule-card">
+      <div class="rule-card-head">
+        <span class="rule-id">${rule.id}</span>
+        <h3>${escapeHtml(rule.title)}</h3>
+      </div>
+      <p class="summary">${escapeHtml(rule.summary)}</p>
+      <p class="basis">근거: ${escapeHtml(rule.basis)}</p>
+      <div class="example-grid">
+        <div class="example-box good"><span class="example-label">좋은 예</span>${escapeHtml(rule.good)}</div>
+        <div class="example-box bad"><span class="example-label">나쁜 예</span>${escapeHtml(rule.bad)}</div>
+      </div>
+      <p class="tip">${escapeHtml(rule.tip)}</p>
+      ${rule.autoCheck === false ? `<p class="auto-check-note">${escapeHtml(rule.autoCheckNote)}</p>` : ""}
+    </article>
+  `,
+    )
+    .join("");
+}
+
+function renderQuizQuestion() {
+  const quizBody = document.getElementById("quizBody");
+  const progress = document.getElementById("quizProgress");
+  const summary = document.getElementById("quizSummary");
+
+  if (state.quizIndex >= state.quiz.length) {
+    quizBody.classList.add("hidden");
+    progress.classList.add("hidden");
+    summary.classList.remove("hidden");
+    renderQuizSummary();
+    return;
+  }
+
+  quizBody.classList.remove("hidden");
+  progress.classList.remove("hidden");
+  summary.classList.add("hidden");
+
+  const q = state.quiz[state.quizIndex];
+  progress.textContent = `${state.quizIndex + 1} / ${state.quiz.length} 문항 · 맞은 개수 ${state.quizScore}`;
+  quizBody.innerHTML = `
+    <div class="quiz-card">
+      <p class="quiz-question">${escapeHtml(q.question)}</p>
+      <div class="quiz-choices">
+        ${q.choices.map((choice, idx) => `<button class="quiz-choice" data-idx="${idx}" type="button">${escapeHtml(choice)}</button>`).join("")}
+      </div>
+      <div class="quiz-explanation hidden" id="quizExplanation">${escapeHtml(q.explanation)}</div>
+      <div class="quiz-next-row hidden" id="quizNextRow">
+        <button class="primary-button" id="quizNextButton" type="button">다음 문항</button>
+      </div>
+    </div>
+  `;
+
+  quizBody.querySelectorAll(".quiz-choice").forEach((button) => {
+    button.addEventListener("click", () => handleQuizChoice(Number(button.dataset.idx), q));
+  });
+}
+
+function handleQuizChoice(idx, question) {
+  const buttons = document.querySelectorAll(".quiz-choice");
+  buttons.forEach((button) => {
+    button.disabled = true;
+  });
+  buttons[idx].classList.add(idx === question.answerIndex ? "correct" : "incorrect");
+  buttons[question.answerIndex].classList.add("correct");
+  if (idx === question.answerIndex) state.quizScore += 1;
+
+  document.getElementById("quizExplanation").classList.remove("hidden");
+  document.getElementById("quizNextRow").classList.remove("hidden");
+  document.getElementById("quizProgress").textContent =
+    `${state.quizIndex + 1} / ${state.quiz.length} 문항 · 맞은 개수 ${state.quizScore}`;
+  document.getElementById("quizNextButton").addEventListener("click", () => {
+    state.quizIndex += 1;
+    renderQuizQuestion();
+  });
+}
+
+function renderQuizSummary() {
+  const summary = document.getElementById("quizSummary");
+  const total = state.quiz.length;
+  const pct = total > 0 ? Math.round((state.quizScore / total) * 100) : 0;
+  saveBestScore(pct);
+  summary.innerHTML = `
+    <div class="quiz-summary">
+      <p>모듈 A 퀴즈 결과</p>
+      <p class="score">${state.quizScore} / ${total}</p>
+      <p>정답률 ${pct}% · 최고 기록 ${getBestScore()}%</p>
+      <button class="ghost-button" id="quizRetryButton" type="button">다시 풀기</button>
+    </div>
+  `;
+  document.getElementById("quizRetryButton").addEventListener("click", () => {
+    state.quizIndex = 0;
+    state.quizScore = 0;
+    renderQuizQuestion();
+  });
+}
+
+function updatePracticeCount() {
+  const count = getPracticeCount();
+  document.getElementById("practiceCount").textContent =
+    count > 0 ? `지금까지 ${count}번 첨삭해 봤어요.` : "";
+}
+
+function renderPracticeReport(results) {
+  const ruleTitleMap = Object.fromEntries(state.rules.map((rule) => [rule.id, rule.title]));
+  const report = document.getElementById("practiceReport");
+  report.classList.remove("hidden");
+  report.innerHTML = `<div class="report-table">${results
+    .map(
+      (result) => `
+    <div class="report-row">
+      <span class="badge ${result.status}">${statusLabel(result.status)}</span>
+      <div>
+        <p class="rule-name">${result.ruleId} · ${escapeHtml(ruleTitleMap[result.ruleId] || "")}</p>
+        <p class="message">${escapeHtml(result.message)}</p>
+      </div>
+    </div>
+  `,
+    )
+    .join("")}</div>`;
+}
+
+function bindPractice() {
+  document.getElementById("checkButton").addEventListener("click", () => {
+    const text = document.getElementById("practiceInput").value.trim();
+    const report = document.getElementById("practiceReport");
+    if (!text) {
+      report.classList.remove("hidden");
+      report.innerHTML = `<p class="module-intro">본문을 입력한 뒤 첨삭하기를 눌러 주세요.</p>`;
+      return;
+    }
+    renderPracticeReport(checkAll(text));
+    const count = bumpPracticeCount();
+    document.getElementById("practiceCount").textContent = `지금까지 ${count}번 첨삭해 봤어요.`;
+  });
+}
+
+function bindTabs() {
+  document.querySelectorAll(".tab-button").forEach((button) => {
+    button.addEventListener("click", () => {
+      document.querySelectorAll(".tab-button").forEach((b) => {
+        b.classList.remove("active");
+        b.setAttribute("aria-selected", "false");
+      });
+      button.classList.add("active");
+      button.setAttribute("aria-selected", "true");
+      document.querySelectorAll(".tab-panel").forEach((panel) => panel.classList.add("hidden"));
+      document.getElementById(`tab-${button.dataset.tab}`).classList.remove("hidden");
+    });
+  });
+}
+
+async function init() {
+  const [rulesData, quizData] = await Promise.all([
+    fetch("data/rules.json").then((res) => res.json()),
+    fetch("data/quiz.json").then((res) => res.json()),
+  ]);
+  state.rules = rulesData.rules;
+  state.quiz = quizData;
+
+  document.getElementById("moduleIntro").textContent = rulesData.moduleIntro;
+  renderRuleCards();
+  renderQuizQuestion();
+  updatePracticeCount();
+  bindTabs();
+  bindPractice();
+}
+
+init();

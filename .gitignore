@@ -1,3 +1,4 @@
 tmp/
 desktop.ini
 node_modules/
+*.log
