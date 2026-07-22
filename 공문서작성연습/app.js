@@ -1,6 +1,7 @@
 import { checkAll as checkAllA } from "./checker.js";
 import { checkAllB } from "./checker-b.js";
 import { checkAllC } from "./checker-c.js";
+import { checkAllD } from "./checker-d.js";
 
 const MODULES = {
   A: {
@@ -28,6 +29,14 @@ const MODULES = {
     defaultPlaceholder:
       "예) 2026. 8. 10.부터 8. 14.까지 09:00~18:00 운영합니다.\n\n소요 예산은 금1,500,000원(금일백오십만원)입니다.",
     defaultHint: "날짜·시간·금액 표기를 하나 이상 포함해 써 보세요.",
+  },
+  D: {
+    title: "용어·표현",
+    rulesFile: "data/rules-d.json",
+    quizFile: "data/quiz-d.json",
+    check: checkAllD,
+    defaultPlaceholder: "예) 임용 도래자에게 참석여부를 알려 줄 것을 안내합니다.",
+    defaultHint: "쉬운 말, 띄어쓰기, 경어체 등을 점검할 문장을 써 보세요.",
   },
 };
 
