@@ -18,17 +18,7 @@
   </header>
 
   <main class="page-shell">
-    <section class="hero">
-      <div>
-        <p class="eyebrow">신규 공무원·교육공무직원을 위한 학습 도구</p>
-        <h2>기안문 본문, 규정대로 쓰는 법을 배우고 직접 써 봅니다</h2>
-        <p>학습 → 퀴즈 → 실습 첨삭 순서로 진행합니다. 실습 첨삭은 규칙 기반으로 동작하며, 입력한 내용은 서버로 전송되지 않고 이 화면에서만 검사됩니다.</p>
-      </div>
-      <div class="hero-note">
-        <strong>학습 안내</strong>
-        <span>먼저 학습 탭에서 규정을 확인하고, 퀴즈로 이해도를 점검한 뒤, 실습 탭에서 직접 문장을 써 보세요.</span>
-      </div>
-    </section>
+    <p class="tagline">기안문 규정을 배우고 → 퀴즈로 확인하고 → 직접 써서 첨삭받아 보세요.</p>
 
     <nav class="module-rail" aria-label="학습 모듈">
       <button class="module-chip active" type="button" data-module="A">A. 본문 내용</button>
@@ -40,9 +30,11 @@
 
     <div class="panel workspace-panel">
       <div class="tab-nav" role="tablist" aria-label="학습 단계">
-        <button class="tab-button active" type="button" data-tab="learn" role="tab" aria-selected="true">1. 학습</button>
-        <button class="tab-button" type="button" data-tab="quiz" role="tab" aria-selected="false">2. 퀴즈</button>
-        <button class="tab-button" type="button" data-tab="practice" role="tab" aria-selected="false">3. 실습 첨삭</button>
+        <button class="tab-button active" type="button" data-tab="learn" role="tab" aria-selected="true"><span class="step-num">1</span>학습</button>
+        <span class="step-arrow" aria-hidden="true">→</span>
+        <button class="tab-button" type="button" data-tab="quiz" role="tab" aria-selected="false"><span class="step-num">2</span>퀴즈</button>
+        <span class="step-arrow" aria-hidden="true">→</span>
+        <button class="tab-button" type="button" data-tab="practice" role="tab" aria-selected="false"><span class="step-num">3</span>실습 첨삭</button>
       </div>
 
       <section id="tab-learn" class="tab-panel" role="tabpanel">
