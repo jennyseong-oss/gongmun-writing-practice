@@ -2,6 +2,7 @@ import { checkAll as checkAllA } from "./checker.js";
 import { checkAllB } from "./checker-b.js";
 import { checkAllC } from "./checker-c.js";
 import { checkAllD } from "./checker-d.js";
+import { checkAllE } from "./checker-e.js";
 
 const MODULES = {
   A: {
@@ -37,6 +38,14 @@ const MODULES = {
     check: checkAllD,
     defaultPlaceholder: "예) 임용 도래자에게 참석여부를 알려 줄 것을 안내합니다.",
     defaultHint: "쉬운 말, 띄어쓰기, 경어체 등을 점검할 문장을 써 보세요.",
+  },
+  E: {
+    title: "용지·여백·글자",
+    rulesFile: "data/rules-e.json",
+    quizFile: "data/quiz-e.json",
+    check: checkAllE,
+    defaultPlaceholder: "예) A4, 세로 방향 / 여백 위 30mm·아래 15mm·좌 20mm·우 15mm / 바탕체 11pt로 설정했습니다.",
+    defaultHint: "지금 작성 중인 문서의 용지·여백·글자 설정을 적어 보고, 아래 체크리스트로 스스로 확인해 보세요.",
   },
 };
 
