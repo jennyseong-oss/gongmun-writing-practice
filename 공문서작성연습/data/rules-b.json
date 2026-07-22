@@ -2,8 +2,6 @@
   "moduleId": "B",
   "moduleTitle": "항목 번호 체계",
   "moduleIntro": "항목 번호를 붙일 때 지켜야 할 여섯 가지 규칙입니다. 번호 순서, 띄어쓰기, 들여쓰기까지 규정대로 맞춰 봅니다.",
-  "practicePlaceholder": "예) 1. 목적\n  가. 신규 임용자의 행정업무 이해도 제고\n2. 일시",
-  "practiceHint": "항목 번호와 들여쓰기를 포함해 두 단계 이상으로 써 보세요.",
   "rules": [
     {
       "id": "B1",

@@ -1,51 +1,18 @@
-import { checkAll as checkAllA } from "./checker.js";
-import { checkAllB } from "./checker-b.js";
-import { checkAllC } from "./checker-c.js";
-import { checkAllD } from "./checker-d.js";
-import { checkAllE } from "./checker-e.js";
+import { checkAllModules } from "./checker-all.js";
 
 const MODULES = {
-  A: {
-    title: "본문 내용",
-    rulesFile: "data/rules.json",
-    quizFile: "data/quiz.json",
-    check: checkAllA,
-    defaultPlaceholder:
-      "예) 2026학년도 신규자 직무연수 참가자를 다음과 같이 모집합니다.\n\n붙임  참가신청서 1부.  끝.",
-    defaultHint: "제목 아래 본문만 입력해도 됩니다. 붙임과 끝 표시까지 포함해서 써 보면 더 많은 항목을 검사할 수 있습니다.",
-  },
-  B: {
-    title: "항목 번호 체계",
-    rulesFile: "data/rules-b.json",
-    quizFile: "data/quiz-b.json",
-    check: checkAllB,
-    defaultPlaceholder: "예) 1. 목적\n  가. 신규 임용자의 행정업무 이해도 제고\n2. 일시",
-    defaultHint: "항목 번호와 들여쓰기를 포함해 두 단계 이상으로 써 보세요.",
-  },
-  C: {
-    title: "날짜·숫자·금액",
-    rulesFile: "data/rules-c.json",
-    quizFile: "data/quiz-c.json",
-    check: checkAllC,
-    defaultPlaceholder:
-      "예) 2026. 8. 10.부터 8. 14.까지 09:00~18:00 운영합니다.\n\n소요 예산은 금1,500,000원(금일백오십만원)입니다.",
-    defaultHint: "날짜·시간·금액 표기를 하나 이상 포함해 써 보세요.",
-  },
-  D: {
-    title: "용어·표현",
-    rulesFile: "data/rules-d.json",
-    quizFile: "data/quiz-d.json",
-    check: checkAllD,
-    defaultPlaceholder: "예) 임용 도래자에게 참석여부를 알려 줄 것을 안내합니다.",
-    defaultHint: "쉬운 말, 띄어쓰기, 경어체 등을 점검할 문장을 써 보세요.",
-  },
-  E: {
-    title: "용지·여백·글자",
-    rulesFile: "data/rules-e.json",
-    quizFile: "data/quiz-e.json",
-    check: checkAllE,
-    defaultPlaceholder: "예) A4, 세로 방향 / 여백 위 30mm·아래 15mm·좌 20mm·우 15mm / 바탕체 11pt로 설정했습니다.",
-    defaultHint: "지금 작성 중인 문서의 용지·여백·글자 설정을 적어 보고, 아래 체크리스트로 스스로 확인해 보세요.",
+  A: { title: "본문 내용", rulesFile: "data/rules.json", quizFile: "data/quiz.json" },
+  B: { title: "항목 번호 체계", rulesFile: "data/rules-b.json", quizFile: "data/quiz-b.json" },
+  C: { title: "날짜·숫자·금액", rulesFile: "data/rules-c.json", quizFile: "data/quiz-c.json" },
+  D: { title: "용어·표현", rulesFile: "data/rules-d.json", quizFile: "data/quiz-d.json" },
+  E: { title: "용지·여백·글자", rulesFile: "data/rules-e.json", quizFile: "data/quiz-e.json" },
+  ALL: {
+    title: "종합 실습",
+    rulesFile: "data/rules-all.json",
+    check: checkAllModules,
+    defaultPlaceholder: "완성된 기안문 전체를 제목 아래부터 붙여넣어 보세요.",
+    defaultHint: "A~E 27개 규정을 한 번에 점검합니다.",
+    practiceHeading: "완성된 기안문 전체를 붙여넣어 보세요",
   },
 };
 
@@ -199,13 +166,8 @@ function updatePracticeCount() {
     count > 0 ? `지금까지 ${count}번 첨삭해 봤어요.` : "";
 }
 
-function renderPracticeReport(results) {
-  const ruleTitleMap = Object.fromEntries(state.rules.map((rule) => [rule.id, rule.title]));
-  const report = document.getElementById("practiceReport");
-  report.classList.remove("hidden");
-  report.innerHTML = `<div class="report-table">${results
-    .map(
-      (result) => `
+function renderReportRow(result, ruleTitleMap) {
+  return `
     <div class="report-row">
       <span class="badge ${result.status}">${statusLabel(result.status)}</span>
       <div>
@@ -213,9 +175,35 @@ function renderPracticeReport(results) {
         <p class="message">${escapeHtml(result.message)}</p>
       </div>
     </div>
-  `,
-    )
-    .join("")}</div>`;
+  `;
+}
+
+function renderPracticeReport(results) {
+  const ruleTitleMap = Object.fromEntries(state.rules.map((rule) => [rule.id, rule.title]));
+  const report = document.getElementById("practiceReport");
+  report.classList.remove("hidden");
+
+  const counts = results.reduce((acc, r) => {
+    acc[r.status] = (acc[r.status] || 0) + 1;
+    return acc;
+  }, {});
+  const summaryLine = `<p class="report-summary">총 ${results.length}개 항목 · 통과 ${counts.pass || 0} · 확인 필요 ${counts.warn || 0} · 참고 ${counts.info || 0}</p>`;
+
+  const moduleLetters = [...new Set(results.map((r) => r.ruleId.charAt(0)))];
+  const groups = moduleLetters
+    .map((letter) => {
+      const groupResults = results.filter((r) => r.ruleId.charAt(0) === letter);
+      const groupTitle = (MODULES[letter] && MODULES[letter].title) || letter;
+      return `
+        <div class="report-group">
+          <h4 class="report-group-title">${letter}. ${escapeHtml(groupTitle)}</h4>
+          <div class="report-table">${groupResults.map((r) => renderReportRow(r, ruleTitleMap)).join("")}</div>
+        </div>
+      `;
+    })
+    .join("");
+
+  report.innerHTML = summaryLine + groups;
 }
 
 function bindPractice() {
@@ -263,29 +251,34 @@ async function loadModule(moduleId) {
   const module = MODULES[moduleId];
   if (!module) return;
   state.moduleId = moduleId;
+  const isComprehensive = moduleId === "ALL";
 
-  const [rulesData, quizData] = await Promise.all([
-    fetch(module.rulesFile).then((res) => res.json()),
-    fetch(module.quizFile).then((res) => res.json()),
-  ]);
+  const rulesData = await fetch(module.rulesFile).then((res) => res.json());
   state.rules = rulesData.rules;
-  state.quiz = quizData;
-  state.quizIndex = 0;
-  state.quizScore = 0;
 
   document.getElementById("modulePill").textContent = `모듈 ${moduleId} · ${module.title}`;
-  document.getElementById("moduleIntro").textContent = rulesData.moduleIntro;
-  document.getElementById("practiceHeading").textContent = `${rulesData.moduleTitle} 부분을 직접 써 보세요`;
-  document.getElementById("practiceHint").textContent = rulesData.practiceHint || module.defaultHint;
-  document.getElementById("practiceInput").placeholder = rulesData.practicePlaceholder || module.defaultPlaceholder;
-  document.getElementById("practiceInput").value = "";
-  document.getElementById("practiceReport").classList.add("hidden");
-  document.getElementById("practiceReport").innerHTML = "";
+  document.getElementById("moduleTabs").classList.toggle("hidden", isComprehensive);
+  document.getElementById("comprehensivePanel").classList.toggle("hidden", !isComprehensive);
 
-  renderRuleCards();
-  renderQuizQuestion();
-  updatePracticeCount();
-  switchToLearnTab();
+  if (isComprehensive) {
+    document.getElementById("practiceHeading").textContent = module.practiceHeading || module.title;
+    document.getElementById("practiceHint").textContent = rulesData.practiceHint || module.defaultHint;
+    document.getElementById("practiceInput").placeholder = rulesData.practicePlaceholder || module.defaultPlaceholder;
+    document.getElementById("practiceInput").value = "";
+    document.getElementById("practiceReport").classList.add("hidden");
+    document.getElementById("practiceReport").innerHTML = "";
+    updatePracticeCount();
+  } else {
+    const quizData = await fetch(module.quizFile).then((res) => res.json());
+    state.quiz = quizData;
+    state.quizIndex = 0;
+    state.quizScore = 0;
+
+    document.getElementById("moduleIntro").textContent = rulesData.moduleIntro;
+    renderRuleCards();
+    renderQuizQuestion();
+    switchToLearnTab();
+  }
 }
 
 function bindModuleRail() {

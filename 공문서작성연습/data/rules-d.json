@@ -2,8 +2,6 @@
   "moduleId": "D",
   "moduleTitle": "용어·표현",
   "moduleIntro": "공문서에서 자주 틀리는 용어와 표현을 다루는 일곱 가지 규칙입니다. 쉬운 우리말과 바른 표현으로 다듬어 봅니다.",
-  "practicePlaceholder": "예) 임용 도래자에게 참석여부를 알려 줄 것을 안내합니다.",
-  "practiceHint": "쉬운 말, 띄어쓰기, 경어체 등을 점검할 문장을 써 보세요.",
   "rules": [
     {
       "id": "D1",

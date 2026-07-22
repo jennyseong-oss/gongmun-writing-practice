@@ -18,7 +18,7 @@ function checkC1(text) {
       message: "온점 뒤에 한 칸을 띄우세요. (예: 2026. 4. 15.)",
     };
   }
-  if (/\.\s0\d\b/.test(text)) {
+  if (/\.\s0\d\.(?!\d)/.test(text)) {
     return {
       ruleId: "C1",
       status: "warn",
