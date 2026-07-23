@@ -1,4 +1,5 @@
 import { checkAllModules } from "./checker-all.js";
+import { annotateText } from "./annotate.js";
 
 const MODULES = {
   A: { title: "본문 내용", rulesFile: "data/rules.json", quizFile: "data/quiz.json" },
@@ -276,12 +277,17 @@ function bindPractice() {
   document.getElementById("checkButton").addEventListener("click", () => {
     const text = document.getElementById("practiceInput").value.trim();
     const report = document.getElementById("practiceReport");
+    const previewBlock = document.getElementById("practicePreviewBlock");
     if (!text) {
       report.classList.remove("hidden");
       report.innerHTML = `<p class="module-intro">본문을 입력한 뒤 첨삭하기를 눌러 주세요.</p>`;
+      previewBlock.classList.add("hidden");
       return;
     }
-    renderPracticeReport(MODULES[state.moduleId].check(text));
+    const results = MODULES[state.moduleId].check(text);
+    document.getElementById("practicePreview").innerHTML = annotateText(text, results);
+    previewBlock.classList.remove("hidden");
+    renderPracticeReport(results);
     const count = bumpPracticeCount();
     document.getElementById("practiceCount").textContent = `지금까지 ${count}번 첨삭해 봤어요.`;
   });
@@ -333,6 +339,8 @@ async function loadModule(moduleId) {
     document.getElementById("practiceInput").value = "";
     document.getElementById("practiceReport").classList.add("hidden");
     document.getElementById("practiceReport").innerHTML = "";
+    document.getElementById("practicePreviewBlock").classList.add("hidden");
+    document.getElementById("practicePreview").innerHTML = "";
     updatePracticeCount();
   } else {
     const quizData = await fetch(module.quizFile).then((res) => res.json());

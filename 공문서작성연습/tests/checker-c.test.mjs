@@ -8,23 +8,33 @@ test("C1: 올바른 날짜 표기는 통과", () => {
 });
 
 test("C1: '년/월/일' 표기는 경고", () => {
-  const result = checkC1("2026년 4월 15일에 진행합니다.");
+  const text = "2026년 4월 15일에 진행합니다.";
+  const result = checkC1(text);
   assert.equal(result.status, "warn");
+  assert.equal(text.slice(result.matchIndex, result.matchIndex + result.matchText.length), result.matchText);
+  assert.equal(result.matchText, "2026년 4월 15일");
 });
 
 test("C1: 온점 뒤 띄어쓰기가 없으면 경고", () => {
-  const result = checkC1("2026.4.15에 진행합니다.");
+  const text = "2026.4.15에 진행합니다.";
+  const result = checkC1(text);
   assert.equal(result.status, "warn");
+  assert.equal(result.matchText, "2026.4.15");
+  assert.equal(text.slice(result.matchIndex, result.matchIndex + result.matchText.length), result.matchText);
 });
 
 test("C1: 월·일 앞에 0을 붙이면 경고", () => {
-  const result = checkC1("2026. 04. 15.에 진행합니다.");
+  const text = "2026. 04. 15.에 진행합니다.";
+  const result = checkC1(text);
   assert.equal(result.status, "warn");
+  assert.equal(text.slice(result.matchIndex, result.matchIndex + result.matchText.length), result.matchText);
 });
 
 test("C1: 날짜 범위 물결표 앞뒤에 공백이 있으면 경고", () => {
-  const result = checkC1("행사 기간은 4. 23. ~ 6. 15. 입니다.");
+  const text = "행사 기간은 4. 23. ~ 6. 15. 입니다.";
+  const result = checkC1(text);
   assert.equal(result.status, "warn");
+  assert.equal(text.slice(result.matchIndex, result.matchIndex + result.matchText.length), result.matchText);
 });
 
 test("C1: 날짜 표기가 없으면 안내(info)", () => {
@@ -38,23 +48,32 @@ test("C2: 올바른 시간 표기는 통과", () => {
 });
 
 test("C2: 한글 시각 표기는 경고", () => {
-  const result = checkC2("오후 3시 20분에 시작합니다.");
+  const text = "오후 3시 20분에 시작합니다.";
+  const result = checkC2(text);
   assert.equal(result.status, "warn");
+  assert.equal(text.slice(result.matchIndex, result.matchIndex + result.matchText.length), result.matchText);
 });
 
 test("C2: AM/PM 표기는 경고", () => {
-  const result = checkC2("9:30 AM에 시작합니다.");
+  const text = "9:30 AM에 시작합니다.";
+  const result = checkC2(text);
   assert.equal(result.status, "warn");
+  assert.equal(text.slice(result.matchIndex, result.matchIndex + result.matchText.length), result.matchText);
 });
 
 test("C2: 물결표 앞뒤 공백이 있으면 경고", () => {
-  const result = checkC2("09:00 ~ 18:00 운영합니다.");
+  const text = "09:00 ~ 18:00 운영합니다.";
+  const result = checkC2(text);
   assert.equal(result.status, "warn");
+  assert.equal(text.slice(result.matchIndex, result.matchIndex + result.matchText.length), result.matchText);
 });
 
 test("C2: 시가 한 자리 숫자면 경고", () => {
-  const result = checkC2("9:00부터 진행합니다.");
+  const text = "9:00부터 진행합니다.";
+  const result = checkC2(text);
   assert.equal(result.status, "warn");
+  assert.equal(result.matchText, "9:00");
+  assert.equal(text.slice(result.matchIndex, result.matchIndex + result.matchText.length), result.matchText);
 });
 
 test("C2: 시간 표기가 없으면 안내(info)", () => {
@@ -68,8 +87,10 @@ test("C3: 아라비아 숫자는 통과", () => {
 });
 
 test("C3: 한글 숫자는 경고", () => {
-  const result = checkC3("참가 인원은 서른 명입니다.");
+  const text = "참가 인원은 서른 명입니다.";
+  const result = checkC3(text);
   assert.equal(result.status, "warn");
+  assert.equal(text.slice(result.matchIndex, result.matchIndex + result.matchText.length), result.matchText);
 });
 
 test("C3: 숫자가 없으면 안내(info)", () => {
@@ -83,18 +104,24 @@ test("C4: 쉼표·한글 병기·'일' 접두가 모두 맞으면 통과", () =>
 });
 
 test("C4: 천 단위 쉼표가 없으면 경고", () => {
-  const result = checkC4("금1500000원(금일백오십만원)입니다.");
+  const text = "금1500000원(금일백오십만원)입니다.";
+  const result = checkC4(text);
   assert.equal(result.status, "warn");
+  assert.equal(text.slice(result.matchIndex, result.matchIndex + result.matchText.length), result.matchText);
 });
 
 test("C4: 한글 병기가 없으면 경고", () => {
-  const result = checkC4("1,500,000원 정도가 필요합니다.");
+  const text = "1,500,000원 정도가 필요합니다.";
+  const result = checkC4(text);
   assert.equal(result.status, "warn");
+  assert.equal(text.slice(result.matchIndex, result.matchIndex + result.matchText.length), result.matchText);
 });
 
 test("C4: 한글 병기에서 '일'이 빠지면 경고", () => {
-  const result = checkC4("금1,500,000원(금백오십만원)입니다.");
+  const text = "금1,500,000원(금백오십만원)입니다.";
+  const result = checkC4(text);
   assert.equal(result.status, "warn");
+  assert.equal(text.slice(result.matchIndex, result.matchIndex + result.matchText.length), result.matchText);
 });
 
 test("C4: 금액 표기가 없으면 안내(info)", () => {

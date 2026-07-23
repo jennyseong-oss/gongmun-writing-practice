@@ -50,6 +50,8 @@ function checkWithDictionary(ruleId, text) {
         ruleId,
         status: "warn",
         message: `'${match[0]}' 대신 '${entry.suggestion}'을(를) 사용하세요.`,
+        matchText: match[0],
+        matchIndex: match.index,
       };
     }
   }

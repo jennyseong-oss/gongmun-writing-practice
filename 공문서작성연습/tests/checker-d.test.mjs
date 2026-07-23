@@ -8,8 +8,11 @@ test("D1: 어려운 말이 없으면 통과", () => {
 });
 
 test("D1: '제고'가 있으면 경고", () => {
-  const result = checkD1("업무 효율 제고를 위해 노력하겠습니다.");
+  const text = "업무 효율 제고를 위해 노력하겠습니다.";
+  const result = checkD1(text);
   assert.equal(result.status, "warn");
+  assert.equal(result.matchText, "제고");
+  assert.equal(text.slice(result.matchIndex, result.matchIndex + result.matchText.length), "제고");
 });
 
 test("D2: 번역투가 없으면 통과", () => {

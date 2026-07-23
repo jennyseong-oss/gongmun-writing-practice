@@ -25,11 +25,15 @@ test("A3: 올바른 붙임 표기는 통과", () => {
 test("A3: '첨부' 표현은 경고", () => {
   const result = checkA3("첨부: 계획서 1부.");
   assert.equal(result.status, "warn");
+  assert.equal(result.matchText, "첨부");
+  assert.equal(result.matchIndex, 0);
 });
 
 test("A3: '붙임' 뒤 한 칸만 띄우면 경고", () => {
   const result = checkA3("붙임 계획서 1부.");
   assert.equal(result.status, "warn");
+  assert.equal(result.matchText, "붙임 계");
+  assert.equal(result.matchIndex, 0);
 });
 
 test("A3: 붙임 표기가 없으면 안내(info)", () => {
@@ -43,8 +47,11 @@ test("A4: 경어체 문장은 통과", () => {
 });
 
 test("A4: 명령형 문장은 경고", () => {
-  const result = checkA4("붙임 서식을 작성하여 제출할 것.");
+  const text = "붙임 서식을 작성하여 제출할 것.";
+  const result = checkA4(text);
   assert.equal(result.status, "warn");
+  assert.equal(result.matchText, "할 것.");
+  assert.equal(text.slice(result.matchIndex, result.matchIndex + result.matchText.length), "할 것.");
 });
 
 test("A5: 두 칸 띄우고 끝. 있으면 통과", () => {
@@ -58,8 +65,11 @@ test("A5: 끝. 표시가 없으면 경고", () => {
 });
 
 test("A5: 끝. 앞에 한 칸만 있으면 경고", () => {
-  const result = checkA5("참석하여 주시기 바랍니다. 끝.");
+  const text = "참석하여 주시기 바랍니다. 끝.";
+  const result = checkA5(text);
   assert.equal(result.status, "warn");
+  assert.equal(result.matchText, "끝.");
+  assert.equal(text.slice(result.matchIndex, result.matchIndex + result.matchText.length), "끝.");
 });
 
 test("A6: 올바른 관련문서 표시는 통과", () => {
@@ -70,6 +80,7 @@ test("A6: 올바른 관련문서 표시는 통과", () => {
 test("A6: 붙임표 누락·날짜 오류는 경고", () => {
   const result = checkA6("교육운영과 1234(2026.3.10)호와 관련됩니다.");
   assert.equal(result.status, "warn");
+  assert.equal(result.matchText, "관련됩니다");
 });
 
 test("A6: 관련문서 인용이 없으면 안내(info)", () => {

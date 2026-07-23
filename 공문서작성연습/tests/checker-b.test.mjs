@@ -8,8 +8,11 @@ test("B1: 단계를 건너뛰지 않으면 통과", () => {
 });
 
 test("B1: 둘째 단계를 건너뛰고 다섯째 단계를 쓰면 경고", () => {
-  const result = checkB1("1. 목적\n  (1) 세부 사항\n2. 일시");
+  const text = "1. 목적\n  (1) 세부 사항\n2. 일시";
+  const result = checkB1(text);
   assert.equal(result.status, "warn");
+  assert.equal(result.matchText, "(1)");
+  assert.equal(text.slice(result.matchIndex, result.matchIndex + result.matchText.length), "(1)");
 });
 
 test("B2: 기호 뒤 한 칸이면 통과", () => {
@@ -25,6 +28,8 @@ test("B2: 기호 뒤 두 칸 이상이면 경고", () => {
 test("B2: 기호 뒤 붙여 쓰면 경고", () => {
   const result = checkB2("가.내용");
   assert.equal(result.status, "warn");
+  assert.equal(result.matchText, "가.");
+  assert.equal(result.matchIndex, 0);
 });
 
 test("B3: 단계별 들여쓰기가 올바르면 통과", () => {
@@ -33,8 +38,11 @@ test("B3: 단계별 들여쓰기가 올바르면 통과", () => {
 });
 
 test("B3: 둘째 단계인데 들여쓰기가 없으면 경고", () => {
-  const result = checkB3("1. 목적\n가. 세부 목적");
+  const text = "1. 목적\n가. 세부 목적";
+  const result = checkB3(text);
   assert.equal(result.status, "warn");
+  assert.equal(result.matchText, "가.");
+  assert.equal(text.slice(result.matchIndex, result.matchIndex + result.matchText.length), "가.");
 });
 
 test("B5: 항목이 여러 개면 통과", () => {
@@ -45,6 +53,8 @@ test("B5: 항목이 여러 개면 통과", () => {
 test("B5: 항목이 하나뿐이면 경고", () => {
   const result = checkB5("1. 참가 대상은 신규 임용자입니다.");
   assert.equal(result.status, "warn");
+  assert.equal(result.matchText, "1.");
+  assert.equal(result.matchIndex, 0);
 });
 
 test("B5: 항목 기호가 없으면 안내(info)", () => {
@@ -60,11 +70,15 @@ test("B6: 정식 기호만 쓰면 통과", () => {
 test("B6: '-'를 항목 기호로 쓰면 경고", () => {
   const result = checkB6("- 목적");
   assert.equal(result.status, "warn");
+  assert.equal(result.matchText, "-");
+  assert.equal(result.matchIndex, 0);
 });
 
 test("B6: 영문자를 항목 기호로 쓰면 경고", () => {
   const result = checkB6("A. 세부 내용");
   assert.equal(result.status, "warn");
+  assert.equal(result.matchText, "A.");
+  assert.equal(result.matchIndex, 0);
 });
 
 test("checkAllB: B1~B6을 순서대로 반환하며 B4는 항상 info", () => {

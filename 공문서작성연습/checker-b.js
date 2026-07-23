@@ -17,9 +17,11 @@ const LEVEL_PATTERNS = [
 const FORBIDDEN_MARKER_REGEX = /^(-|·|Ⅰ|Ⅱ|Ⅲ|Ⅳ|Ⅴ|Ⅵ|Ⅶ|Ⅷ|Ⅸ|Ⅹ|[A-Za-z])[.)]?\s/;
 
 function analyzeLines(text) {
+  let offset = 0;
   return text.split("\n").map((rawLine) => {
     const leading = rawLine.match(/^ */)[0].length;
     const trimmed = rawLine.replace(/^ +/, "");
+    const start = offset + leading;
     let level = null;
     let markerLength = 0;
     for (const pattern of LEVEL_PATTERNS) {
@@ -30,7 +32,8 @@ function analyzeLines(text) {
         break;
       }
     }
-    return { trimmed, leading, level, markerLength };
+    offset += rawLine.length + 1;
+    return { trimmed, leading, level, markerLength, start };
   });
 }
 
@@ -42,10 +45,13 @@ function checkB1(text) {
   let highestSeen = 0;
   for (const item of items) {
     if (item.level > highestSeen + 1) {
+      const marker = item.trimmed.slice(0, item.markerLength);
       return {
         ruleId: "B1",
         status: "warn",
-        message: `'${item.trimmed.slice(0, item.markerLength)}' 기호가 단계를 건너뛰었습니다. 순서(1.→가.→1)→가)…)를 확인하세요.`,
+        message: `'${marker}' 기호가 단계를 건너뛰었습니다. 순서(1.→가.→1)→가)…)를 확인하세요.`,
+        matchText: marker,
+        matchIndex: item.start,
       };
     }
     highestSeen = Math.max(highestSeen, item.level);
@@ -68,6 +74,8 @@ function checkB2(text) {
         ruleId: "B2",
         status: "warn",
         message: `'${marker}' 뒤에 내용이 붙어 있습니다. 한 칸을 띄우세요.`,
+        matchText: marker,
+        matchIndex: item.start,
       };
     }
     if (spacing >= 2) {
@@ -75,6 +83,8 @@ function checkB2(text) {
         ruleId: "B2",
         status: "warn",
         message: `'${marker}' 뒤 띄어쓰기가 ${spacing}칸입니다. 한 칸만 띄우세요.`,
+        matchText: marker,
+        matchIndex: item.start,
       };
     }
   }
@@ -94,6 +104,8 @@ function checkB3(text) {
         ruleId: "B3",
         status: "warn",
         message: `'${marker}' 들여쓰기가 ${item.leading}칸입니다. ${item.level}단계는 ${expected}칸 들여써야 합니다.`,
+        matchText: marker,
+        matchIndex: item.start,
       };
     }
   }
@@ -106,10 +118,13 @@ function checkB5(text) {
     return { ruleId: "B5", status: "info", message: "항목 번호를 찾지 못했습니다." };
   }
   if (items.length === 1) {
+    const marker = items[0].trimmed.slice(0, items[0].markerLength);
     return {
       ruleId: "B5",
       status: "warn",
       message: "항목이 하나뿐입니다. 나열할 항목이 하나뿐이면 번호 없이 문장으로 씁니다.",
+      matchText: marker,
+      matchIndex: items[0].start,
     };
   }
   return { ruleId: "B5", status: "pass", message: "항목이 여러 개이므로 번호 사용이 적절합니다." };
@@ -124,6 +139,8 @@ function checkB6(text) {
         ruleId: "B6",
         status: "warn",
         message: `'${marker}'는 항목 번호로 쓸 수 없는 기호입니다. 1. 가. 1) 가) 같은 정식 기호를 사용하세요.`,
+        matchText: marker,
+        matchIndex: line.start,
       };
     }
   }

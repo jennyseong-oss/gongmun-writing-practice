@@ -25,11 +25,14 @@ function checkA2(text) {
 }
 
 function checkA3(text) {
-  if (/첨부|붙임물/.test(text)) {
+  const wrongTermMatch = text.match(/첨부|붙임물/);
+  if (wrongTermMatch) {
     return {
       ruleId: "A3",
       status: "warn",
       message: "'첨부' 또는 '붙임물' 대신 '붙임'이라는 표현을 사용하세요.",
+      matchText: wrongTermMatch[0],
+      matchIndex: wrongTermMatch.index,
     };
   }
   const match = text.match(/붙임(\s*)(\S)/);
@@ -46,6 +49,8 @@ function checkA3(text) {
       ruleId: "A3",
       status: "warn",
       message: "'붙임' 뒤에는 콜론(:)을 쓰지 않고 두 칸을 띄웁니다.",
+      matchText: match[0],
+      matchIndex: match.index,
     };
   }
   if (spacing.length < 2) {
@@ -53,6 +58,8 @@ function checkA3(text) {
       ruleId: "A3",
       status: "warn",
       message: `'붙임' 뒤 띄어쓰기가 ${spacing.length}칸입니다. 두 칸을 띄우세요.`,
+      matchText: match[0],
+      matchIndex: match.index,
     };
   }
   return { ruleId: "A3", status: "pass", message: "'붙임' 표기가 올바릅니다." };
@@ -61,10 +68,14 @@ function checkA3(text) {
 function checkA4(text) {
   const badMatch = text.match(/[^.\n]*(할\s*것|하시오)\./);
   if (badMatch) {
+    const phrase = `${badMatch[1]}.`;
+    const phraseStart = badMatch.index + badMatch[0].lastIndexOf(badMatch[1]);
     return {
       ruleId: "A4",
       status: "warn",
       message: `명령형 표현 '${badMatch[0].trim()}'이 있습니다. '~하여 주시기 바랍니다'처럼 경어체로 바꾸세요.`,
+      matchText: phrase,
+      matchIndex: phraseStart,
     };
   }
   if (/니다\./.test(text)) {
@@ -78,15 +89,19 @@ function checkA4(text) {
 }
 
 function checkA5(text) {
-  const lines = text
-    .split("\n")
-    .map((line) => line.replace(/\s+$/, ""))
-    .filter((line) => line.trim().length > 0);
-  if (lines.length === 0) {
+  let offset = 0;
+  let lastLine = null;
+  for (const rawLine of text.split("\n")) {
+    const trimmedEnd = rawLine.replace(/\s+$/, "");
+    if (trimmedEnd.trim().length > 0) {
+      lastLine = { text: trimmedEnd, start: offset };
+    }
+    offset += rawLine.length + 1;
+  }
+  if (!lastLine) {
     return { ruleId: "A5", status: "info", message: "검사할 본문이 없습니다." };
   }
-  const lastLine = lines[lines.length - 1];
-  const match = lastLine.match(/( *)끝\.$/);
+  const match = lastLine.text.match(/( *)끝\.$/);
   if (!match) {
     return { ruleId: "A5", status: "warn", message: "본문 마지막에 '끝.' 표시가 없습니다." };
   }
@@ -95,6 +110,8 @@ function checkA5(text) {
       ruleId: "A5",
       status: "warn",
       message: `'끝.' 앞 띄어쓰기가 ${match[1].length}칸입니다. 두 칸을 띄우세요.`,
+      matchText: "끝.",
+      matchIndex: lastLine.start + match.index + match[1].length,
     };
   }
   return { ruleId: "A5", status: "pass", message: "'끝.' 표시가 올바릅니다." };
@@ -108,11 +125,14 @@ function checkA6(text) {
   if (goodPattern.test(text)) {
     return { ruleId: "A6", status: "pass", message: "관련문서 표시 형식이 올바릅니다." };
   }
+  const anchor = text.match(/관련됩니다/);
   return {
     ruleId: "A6",
     status: "warn",
     message:
       "관련문서 표시는 '처리과명-번호(날짜)호와 관련됩니다.' 형식을 지켜야 합니다. (예: 교육운영과-1234(2026. 3. 10.)호와 관련됩니다.)",
+    matchText: anchor[0],
+    matchIndex: anchor.index,
   };
 }
 
