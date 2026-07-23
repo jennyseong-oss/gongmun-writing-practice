@@ -44,7 +44,6 @@ button, input, select, textarea { font: inherit; }
 .status-pill { margin-left: auto; padding: 6px 12px; border-radius: 8px; background: var(--accent-soft); color: var(--accent); font-size: 12px; font-weight: 700; }
 
 .page-shell { max-width: 1180px; margin: 0 auto; padding: 30px 20px 60px; }
-.tagline { margin: 0 0 22px; color: var(--muted); font-size: 14.5px; font-weight: 600; max-width: 640px; }
 
 .module-rail { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 18px; }
 .module-chip { display: inline-flex; align-items: center; gap: 7px; padding: 9px 15px; border-radius: 8px; border: 1px solid var(--line); background: var(--surface); color: var(--ink); font-weight: 700; font-size: 13px; cursor: pointer; }
@@ -66,6 +65,16 @@ button, input, select, textarea { font: inherit; }
 .step-arrow { opacity: .35; font-size: 13px; padding: 0 2px; }
 
 .module-intro { color: var(--muted); margin: 0 0 20px; max-width: 760px; font-size: 14px; }
+.module-intro strong { color: var(--ink); }
+
+.anatomy-example { display: grid; gap: 10px; margin-bottom: 16px; }
+.anatomy-row { display: grid; grid-template-columns: 160px 1fr; gap: 14px; align-items: center; padding: 12px 14px; border: 1px solid var(--line); border-radius: 10px; background: var(--canvas); }
+.anatomy-tag { font-size: 11px; font-weight: 800; background: var(--accent); color: var(--surface); padding: 4px 9px; border-radius: 6px; text-align: center; }
+.anatomy-text { margin: 0; font-size: 13.5px; line-height: 1.6; }
+.anatomy-footnote { margin: 0 0 18px; font-size: 12.5px; color: var(--muted); }
+@media (max-width: 620px) {
+  .anatomy-row { grid-template-columns: 1fr; }
+}
 
 .rule-cards { display: grid; gap: 14px; }
 @media (min-width: 760px) { .rule-cards { grid-template-columns: 1fr 1fr; } }

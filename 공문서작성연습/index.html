@@ -14,14 +14,13 @@
       <p class="eyebrow">행정업무운영편람(2025) · 규정·시행규칙 기준</p>
       <h1>공문서 작성 연습</h1>
     </div>
-    <span class="status-pill" id="modulePill">모듈 A · 본문 내용</span>
+    <span class="status-pill" id="modulePill">시작하기</span>
   </header>
 
   <main class="page-shell">
-    <p class="tagline">모듈별로 배우고 퀴즈로 확인한 뒤, 종합 실습에서 완성한 기안문 전체를 첨삭받아 보세요.</p>
-
     <nav class="module-rail" aria-label="학습 모듈">
-      <button class="module-chip active" type="button" data-module="A">A. 본문 내용</button>
+      <button class="module-chip active" type="button" data-module="START">시작하기</button>
+      <button class="module-chip" type="button" data-module="A">A. 본문 내용</button>
       <button class="module-chip" type="button" data-module="B">B. 항목 번호</button>
       <button class="module-chip" type="button" data-module="C">C. 날짜·숫자·금액</button>
       <button class="module-chip" type="button" data-module="D">D. 용어·표현</button>
@@ -30,7 +29,35 @@
     </nav>
 
     <div class="panel workspace-panel">
-      <div id="moduleTabs">
+      <div id="introPanel">
+        <p class="module-intro">기안문은 크게 <strong>제목 · 본문 내용 · 붙임 · 끝 표시</strong>로 이루어져 있어요. 아래 예시에서 각 부분이 어떤 모듈 내용인지 확인하고 시작해 보세요. (두문·결문은 업무관리시스템이 자동으로 채워 주기 때문에 다루지 않아요.)</p>
+        <div class="anatomy-example">
+          <div class="anatomy-row">
+            <span class="anatomy-tag">A모듈 · 제목</span>
+            <p class="anatomy-text">2026학년도 신규자 직무연수 참가자를 다음과 같이 모집합니다.</p>
+          </div>
+          <div class="anatomy-row">
+            <span class="anatomy-tag">B모듈 · 항목 번호</span>
+            <p class="anatomy-text">1. 목적<br>&nbsp;&nbsp;가. 신규 임용자의 행정업무 이해도 향상</p>
+          </div>
+          <div class="anatomy-row">
+            <span class="anatomy-tag">C모듈 · 날짜·시간</span>
+            <p class="anatomy-text">2. 일시: 2026. 8. 10.~8. 14. 09:00~18:00</p>
+          </div>
+          <div class="anatomy-row">
+            <span class="anatomy-tag">D모듈 · 용어·표현</span>
+            <p class="anatomy-text">참석 여부를 알려 주시기 바랍니다.</p>
+          </div>
+          <div class="anatomy-row">
+            <span class="anatomy-tag">A모듈 · 붙임·끝 표시</span>
+            <p class="anatomy-text">붙임&nbsp;&nbsp;참가신청서 1부.&nbsp;&nbsp;끝.</p>
+          </div>
+        </div>
+        <p class="anatomy-footnote">용지 크기·여백·글자체(E모듈)처럼 눈에 잘 안 띄지만 지켜야 할 서식 규정도 있어요.</p>
+        <button class="primary-button" id="introStartButton" type="button">A모듈부터 시작하기</button>
+      </div>
+
+      <div id="moduleTabs" class="hidden">
         <div class="tab-nav" role="tablist" aria-label="학습 단계">
           <button class="tab-button active" type="button" data-tab="learn" role="tab" aria-selected="true"><span class="step-num">1</span>학습</button>
           <span class="step-arrow" aria-hidden="true">→</span>

@@ -2,6 +2,7 @@ import { checkAllModules } from "./checker-all.js";
 import { annotateText } from "./annotate.js";
 
 const MODULES = {
+  START: { title: "시작하기", mode: "intro" },
   A: { title: "본문 내용", rulesFile: "data/rules.json", quizFile: "data/quiz.json" },
   B: { title: "항목 번호 체계", rulesFile: "data/rules-b.json", quizFile: "data/quiz-b.json" },
   C: { title: "날짜·숫자·금액", rulesFile: "data/rules-c.json", quizFile: "data/quiz-c.json" },
@@ -9,6 +10,7 @@ const MODULES = {
   E: { title: "용지·여백·글자", rulesFile: "data/rules-e.json", quizFile: "data/quiz-e.json" },
   ALL: {
     title: "종합 실습",
+    mode: "practice",
     rulesFile: "data/rules-all.json",
     check: checkAllModules,
     defaultPlaceholder: "완성된 기안문 전체를 제목 아래부터 붙여넣어 보세요.",
@@ -18,7 +20,7 @@ const MODULES = {
 };
 
 const state = {
-  moduleId: "A",
+  moduleId: "START",
   rules: [],
   quiz: [],
   quizIndex: 0,
@@ -160,7 +162,7 @@ function handleQuizChoice(idx, question) {
 function renderChipScores() {
   document.querySelectorAll(".module-chip[data-module]").forEach((chip) => {
     const moduleId = chip.dataset.module;
-    if (moduleId === "ALL") return;
+    if (moduleId === "ALL" || moduleId === "START") return;
     const stored = localStorage.getItem(`gongmun-${moduleId.toLowerCase()}-quiz-best`);
     let badge = chip.querySelector(".chip-score");
     if (!badge) {
@@ -323,16 +325,20 @@ async function loadModule(moduleId) {
   const module = MODULES[moduleId];
   if (!module) return;
   state.moduleId = moduleId;
-  const isComprehensive = moduleId === "ALL";
+  const mode = module.mode || "standard";
+
+  document.getElementById("modulePill").textContent =
+    mode === "intro" ? module.title : `모듈 ${moduleId} · ${module.title}`;
+  document.getElementById("introPanel").classList.toggle("hidden", mode !== "intro");
+  document.getElementById("moduleTabs").classList.toggle("hidden", mode !== "standard");
+  document.getElementById("comprehensivePanel").classList.toggle("hidden", mode !== "practice");
+
+  if (mode === "intro") return;
 
   const rulesData = await fetch(module.rulesFile).then((res) => res.json());
   state.rules = rulesData.rules;
 
-  document.getElementById("modulePill").textContent = `모듈 ${moduleId} · ${module.title}`;
-  document.getElementById("moduleTabs").classList.toggle("hidden", isComprehensive);
-  document.getElementById("comprehensivePanel").classList.toggle("hidden", !isComprehensive);
-
-  if (isComprehensive) {
+  if (mode === "practice") {
     document.getElementById("practiceHeading").textContent = module.practiceHeading || module.title;
     document.getElementById("practiceHint").textContent = rulesData.practiceHint || module.defaultHint;
     document.getElementById("practiceInput").placeholder = rulesData.practicePlaceholder || module.defaultPlaceholder;
@@ -355,21 +361,31 @@ async function loadModule(moduleId) {
   }
 }
 
+function selectModule(moduleId) {
+  if (moduleId === state.moduleId) return;
+  document.querySelectorAll(".module-chip").forEach((c) => c.classList.toggle("active", c.dataset.module === moduleId));
+  loadModule(moduleId);
+}
+
 function bindModuleRail() {
   document.querySelectorAll(".module-chip[data-module]").forEach((chip) => {
     chip.addEventListener("click", () => {
-      if (chip.disabled || chip.dataset.module === state.moduleId) return;
-      document.querySelectorAll(".module-chip").forEach((c) => c.classList.remove("active"));
-      chip.classList.add("active");
-      loadModule(chip.dataset.module);
+      if (chip.disabled) return;
+      selectModule(chip.dataset.module);
     });
   });
+}
+
+function bindIntroStart() {
+  const button = document.getElementById("introStartButton");
+  if (button) button.addEventListener("click", () => selectModule("A"));
 }
 
 async function init() {
   bindTabs();
   bindPractice();
   bindModuleRail();
+  bindIntroStart();
   bindRuleCards();
   bindReportToggles();
   renderChipScores();
