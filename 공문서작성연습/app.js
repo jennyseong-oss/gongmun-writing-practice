@@ -66,22 +66,38 @@ function renderRuleCards() {
     .map(
       (rule) => `
     <article class="rule-card">
-      <div class="rule-card-head">
+      <button class="rule-card-head" type="button" data-rule-toggle aria-expanded="false">
         <span class="rule-id">${rule.id}</span>
-        <h3>${escapeHtml(rule.title)}</h3>
+        <span class="rule-card-title-group">
+          <h3>${escapeHtml(rule.title)}</h3>
+          <span class="rule-card-summary">${escapeHtml(rule.summary)}</span>
+        </span>
+        <span class="rule-card-chevron" aria-hidden="true">▾</span>
+      </button>
+      <div class="rule-card-body hidden">
+        <p class="basis">근거: ${escapeHtml(rule.basis)}</p>
+        <div class="example-grid">
+          <div class="example-box good"><span class="example-label">좋은 예</span>${escapeHtml(rule.good)}</div>
+          <div class="example-box bad"><span class="example-label">나쁜 예</span>${escapeHtml(rule.bad)}</div>
+        </div>
+        <p class="tip">${escapeHtml(rule.tip)}</p>
+        ${rule.autoCheck === false ? `<p class="auto-check-note">${escapeHtml(rule.autoCheckNote)}</p>` : ""}
       </div>
-      <p class="summary">${escapeHtml(rule.summary)}</p>
-      <p class="basis">근거: ${escapeHtml(rule.basis)}</p>
-      <div class="example-grid">
-        <div class="example-box good"><span class="example-label">좋은 예</span>${escapeHtml(rule.good)}</div>
-        <div class="example-box bad"><span class="example-label">나쁜 예</span>${escapeHtml(rule.bad)}</div>
-      </div>
-      <p class="tip">${escapeHtml(rule.tip)}</p>
-      ${rule.autoCheck === false ? `<p class="auto-check-note">${escapeHtml(rule.autoCheckNote)}</p>` : ""}
     </article>
   `,
     )
     .join("");
+}
+
+function bindRuleCards() {
+  document.getElementById("ruleCards").addEventListener("click", (event) => {
+    const head = event.target.closest("[data-rule-toggle]");
+    if (!head) return;
+    const body = head.nextElementSibling;
+    const expanded = head.getAttribute("aria-expanded") === "true";
+    head.setAttribute("aria-expanded", String(!expanded));
+    body.classList.toggle("hidden", expanded);
+  });
 }
 
 function renderQuizQuestion() {
@@ -140,11 +156,33 @@ function handleQuizChoice(idx, question) {
   });
 }
 
+function renderChipScores() {
+  document.querySelectorAll(".module-chip[data-module]").forEach((chip) => {
+    const moduleId = chip.dataset.module;
+    if (moduleId === "ALL") return;
+    const stored = localStorage.getItem(`gongmun-${moduleId.toLowerCase()}-quiz-best`);
+    let badge = chip.querySelector(".chip-score");
+    if (!badge) {
+      badge = document.createElement("span");
+      badge.className = "chip-score";
+      chip.appendChild(badge);
+    }
+    if (stored && Number(stored) > 0) {
+      badge.textContent = `최고 ${stored}%`;
+      badge.classList.remove("hidden");
+    } else {
+      badge.textContent = "";
+      badge.classList.add("hidden");
+    }
+  });
+}
+
 function renderQuizSummary() {
   const summary = document.getElementById("quizSummary");
   const total = state.quiz.length;
   const pct = total > 0 ? Math.round((state.quizScore / total) * 100) : 0;
   saveBestScore(pct);
+  renderChipScores();
   summary.innerHTML = `
     <div class="quiz-summary">
       <p>모듈 ${state.moduleId} 퀴즈 결과</p>
@@ -194,16 +232,44 @@ function renderPracticeReport(results) {
     .map((letter) => {
       const groupResults = results.filter((r) => r.ruleId.charAt(0) === letter);
       const groupTitle = (MODULES[letter] && MODULES[letter].title) || letter;
+      const attentionRows = groupResults.filter((r) => r.status === "warn");
+      const otherRows = groupResults.filter((r) => r.status !== "warn");
+
+      const attentionHtml = attentionRows.length
+        ? `<div class="report-table">${attentionRows.map((r) => renderReportRow(r, ruleTitleMap)).join("")}</div>`
+        : `<p class="report-all-clear">확인이 필요한 항목이 없습니다.</p>`;
+
+      const moreHtml = otherRows.length
+        ? `
+          <button class="report-more-toggle" type="button" data-more-toggle aria-expanded="false">${otherRows.length}개 더 보기 (통과·참고)</button>
+          <div class="report-table hidden">${otherRows.map((r) => renderReportRow(r, ruleTitleMap)).join("")}</div>
+        `
+        : "";
+
       return `
         <div class="report-group">
           <h4 class="report-group-title">${letter}. ${escapeHtml(groupTitle)}</h4>
-          <div class="report-table">${groupResults.map((r) => renderReportRow(r, ruleTitleMap)).join("")}</div>
+          ${attentionHtml}
+          ${moreHtml}
         </div>
       `;
     })
     .join("");
 
   report.innerHTML = summaryLine + groups;
+}
+
+function bindReportToggles() {
+  document.getElementById("practiceReport").addEventListener("click", (event) => {
+    const toggle = event.target.closest("[data-more-toggle]");
+    if (!toggle) return;
+    const table = toggle.nextElementSibling;
+    const expanded = toggle.getAttribute("aria-expanded") === "true";
+    const count = table.querySelectorAll(".report-row").length;
+    toggle.setAttribute("aria-expanded", String(!expanded));
+    table.classList.toggle("hidden", expanded);
+    toggle.textContent = expanded ? `${count}개 더 보기 (통과·참고)` : "접기";
+  });
 }
 
 function bindPractice() {
@@ -296,6 +362,9 @@ async function init() {
   bindTabs();
   bindPractice();
   bindModuleRail();
+  bindRuleCards();
+  bindReportToggles();
+  renderChipScores();
   await loadModule(state.moduleId);
 }
 
