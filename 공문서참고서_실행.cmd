@@ -1,8 +1,8 @@
 @echo off
 chcp 65001 >nul
-title 공문서 작성 연습
+title 공문서 작성 참고서
 
-set "APP_DIR=%~dp0공문서작성연습"
+set "APP_DIR=%~dp0공문서참고서"
 set "NODE_EXE=C:\Users\Min\.cache\codex-runtimes\codex-primary-runtime\dependencies\node\bin\node.exe"
 
 if not exist "%NODE_EXE%" (
@@ -16,7 +16,7 @@ if not exist "%NODE_EXE%" (
   set "NODE_EXE=node"
 )
 
-echo 공문서 작성 연습을 여는 중입니다...
+echo 공문서 작성 참고서를 여는 중입니다...
 if not defined SKIP_BROWSER start "" /b powershell.exe -NoProfile -WindowStyle Hidden -Command "Start-Sleep -Milliseconds 900; Start-Process 'http://127.0.0.1:4174'"
 echo.
 echo 앱을 사용하는 동안 이 창을 열어 두세요.

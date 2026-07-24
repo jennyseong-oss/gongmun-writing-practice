@@ -1,0 +1,74 @@
+:root {
+  --ink: #20242b;
+  --muted: #5b6270;
+  --line: #e3e5e8;
+  --canvas: #fbfbfa;
+  --surface: #ffffff;
+  --accent: #33507a;
+  --accent-soft: #e7ecf3;
+  --pass: #1f7a4d;
+  --pass-soft: #e3f3ea;
+  --warn: #a6650f;
+  --warn-soft: #fbf0dd;
+  --info: #5b6270;
+  --info-soft: #edeef1;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --ink: #e7e9ed;
+    --muted: #a7adb8;
+    --line: #2b2f37;
+    --canvas: #15181d;
+    --surface: #191c22;
+    --accent: #8fa8cf;
+    --accent-soft: #212a38;
+    --pass: #67c496;
+    --pass-soft: #132821;
+    --warn: #e0a94f;
+    --warn-soft: #332612;
+    --info: #a7adb8;
+    --info-soft: #20242b;
+  }
+}
+
+* { box-sizing: border-box; }
+body { margin: 0; color: var(--ink); background: var(--canvas); font-family: Pretendard, "Noto Sans KR", "Malgun Gothic", sans-serif; line-height: 1.55; }
+button, input, select, textarea { font: inherit; }
+.hidden { display: none !important; }
+
+.topbar { min-height: 68px; padding: 14px max(20px, calc((100vw - 1180px)/2)); display: flex; align-items: center; gap: 13px; background: var(--surface); border-bottom: 1px solid var(--line); position: sticky; top: 0; z-index: 20; }
+.topbar h1 { margin: 0; font-size: 19px; font-weight: 800; line-height: 1.2; }
+.brand-mark { width: 38px; height: 38px; border-radius: 10px; display: grid; place-items: center; background: var(--accent); color: var(--surface); font-weight: 800; flex-shrink: 0; }
+.eyebrow { margin: 0 0 2px; color: var(--accent); font-size: 11.5px; font-weight: 700; letter-spacing: .04em; }
+.companion-link { margin-left: auto; padding: 7px 13px; border-radius: 8px; background: var(--accent-soft); color: var(--accent); font-size: 12.5px; font-weight: 700; text-decoration: none; white-space: nowrap; }
+.companion-link:hover { text-decoration: underline; }
+
+.page-shell { max-width: 720px; margin: 0 auto; padding: 30px 20px 60px; }
+.quiz-intro { color: var(--muted); margin: 0 0 18px; font-size: 14px; }
+
+.workspace-panel { background: var(--surface); border: 1px solid var(--line); border-radius: 14px; padding: 20px 24px 28px; }
+
+.quiz-progress { display: flex; justify-content: space-between; align-items: center; color: var(--muted); font-size: 13px; font-weight: 700; margin-bottom: 14px; font-variant-numeric: tabular-nums; }
+.quiz-card { border: 1px solid var(--line); border-radius: 12px; padding: 20px; background: var(--surface); }
+.quiz-question { margin: 0 0 16px; font-size: 15.5px; font-weight: 700; }
+.quiz-choices { display: grid; gap: 9px; margin-bottom: 14px; }
+.quiz-choice { text-align: left; padding: 11px 14px; border: 1px solid var(--line); border-radius: 9px; background: var(--surface); color: var(--ink); cursor: pointer; font-size: 13.5px; }
+.quiz-choice:hover { border-color: var(--accent); }
+.quiz-choice:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.quiz-choice.correct { border-color: var(--pass); background: var(--pass-soft); font-weight: 700; color: var(--pass); }
+.quiz-choice.incorrect { border-color: var(--warn); background: var(--warn-soft); color: var(--warn); }
+.quiz-choice[disabled] { cursor: default; }
+.quiz-explanation { font-size: 13px; color: var(--muted); background: var(--info-soft); border-radius: 8px; padding: 11px 13px; margin-bottom: 14px; }
+.quiz-next-row { display: flex; justify-content: flex-end; }
+.quiz-summary { text-align: center; padding: 26px 10px; }
+.quiz-summary .score { font-size: 36px; font-weight: 800; color: var(--accent); margin: 6px 0; font-variant-numeric: tabular-nums; }
+
+.primary-button { padding: 11px 18px; border-radius: 9px; border: none; background: var(--accent); color: var(--surface); font-weight: 700; font-size: 13.5px; cursor: pointer; }
+.primary-button:hover { opacity: .9; }
+.primary-button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.ghost-button { padding: 9px 15px; border-radius: 9px; border: 1px solid var(--line); background: var(--surface); color: var(--ink); font-weight: 700; font-size: 13px; cursor: pointer; }
+.ghost-button:hover { border-color: var(--accent); color: var(--accent); }
+
+.source-strip { margin-top: 22px; padding: 16px 20px; background: var(--surface); border: 1px solid var(--line); border-radius: 12px; display: flex; flex-direction: column; gap: 5px; font-size: 12px; color: var(--muted); }
+.source-strip strong { color: var(--ink); margin-right: 6px; }

@@ -26,5 +26,5 @@ createServer(async (request, response) => {
     response.end("찾을 수 없습니다.");
   }
 }).listen(port, "127.0.0.1", () => {
-  console.log(`공문서 작성 연습: http://127.0.0.1:${port}`);
+  console.log(`공문서 작성 참고서: http://127.0.0.1:${port}`);
 });

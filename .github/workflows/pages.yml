@@ -1,10 +1,11 @@
-name: Deploy 공문서작성연습 to GitHub Pages
+name: Deploy 공문서 작성 도구 모음 to GitHub Pages
 
 on:
   push:
     branches: [master]
     paths:
-      - "공문서작성연습/**"
+      - "공문서참고서/**"
+      - "공문서퀴즈/**"
       - ".github/workflows/pages.yml"
   workflow_dispatch:
 
@@ -23,12 +24,17 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+      - name: Assemble site (참고서=루트, 퀴즈=/quiz)
+        run: |
+          mkdir -p site/quiz
+          cp -r "공문서참고서/." site/
+          cp -r "공문서퀴즈/." site/quiz/
       - name: Configure Pages
         uses: actions/configure-pages@v5
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          path: "공문서작성연습"
+          path: "site"
 
   deploy:
     needs: build
