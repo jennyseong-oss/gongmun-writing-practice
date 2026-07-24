@@ -2,7 +2,7 @@ import { checkAllModules } from "./checker-all.js";
 import { annotateText } from "./annotate.js";
 
 const MODULES = {
-  START: { title: "시작하기", mode: "intro" },
+  START: { title: "기안문 구조", mode: "intro" },
   A: { title: "본문 내용", rulesFile: "data/rules.json", quizFile: "data/quiz.json" },
   B: { title: "항목 번호 체계", rulesFile: "data/rules-b.json", quizFile: "data/quiz-b.json" },
   C: { title: "날짜·숫자·금액", rulesFile: "data/rules-c.json", quizFile: "data/quiz-c.json" },
@@ -20,7 +20,7 @@ const MODULES = {
 };
 
 const state = {
-  moduleId: "START",
+  moduleId: "ALL",
   rules: [],
   quiz: [],
   quizIndex: 0,
