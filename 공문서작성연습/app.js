@@ -1,5 +1,6 @@
 import { checkAllModules } from "./checker-all.js";
 import { annotateText } from "./annotate.js";
+import { searchRules } from "./search.js";
 
 const MODULES = {
   START: { title: "기안문 구조", mode: "intro" },
@@ -26,6 +27,8 @@ const state = {
   quizIndex: 0,
   quizScore: 0,
 };
+
+let allRules = [];
 
 function escapeHtml(value) {
   return String(value).replace(/[&<>"']/g, (ch) => ({
@@ -69,7 +72,7 @@ function renderRuleCards() {
     .map(
       (rule) => `
     <article class="rule-card">
-      <button class="rule-card-head" type="button" data-rule-toggle aria-expanded="false">
+      <button class="rule-card-head" type="button" data-rule-toggle data-rule-id="${rule.id}" aria-expanded="false">
         <span class="rule-id">${rule.id}</span>
         <span class="rule-card-title-group">
           <h3>${escapeHtml(rule.title)}</h3>
@@ -101,6 +104,14 @@ function bindRuleCards() {
     head.setAttribute("aria-expanded", String(!expanded));
     body.classList.toggle("hidden", expanded);
   });
+}
+
+function expandRuleCard(ruleId) {
+  const head = document.querySelector(`[data-rule-id="${ruleId}"]`);
+  if (!head) return;
+  head.setAttribute("aria-expanded", "true");
+  head.nextElementSibling.classList.remove("hidden");
+  head.scrollIntoView({ behavior: "smooth", block: "center" });
 }
 
 function renderQuizQuestion() {
@@ -361,10 +372,10 @@ async function loadModule(moduleId) {
   }
 }
 
-function selectModule(moduleId) {
+async function selectModule(moduleId) {
   if (moduleId === state.moduleId) return;
   document.querySelectorAll(".module-chip").forEach((c) => c.classList.toggle("active", c.dataset.module === moduleId));
-  loadModule(moduleId);
+  await loadModule(moduleId);
 }
 
 function bindModuleRail() {
@@ -381,6 +392,77 @@ function bindIntroStart() {
   if (button) button.addEventListener("click", () => selectModule("A"));
 }
 
+async function goToSearchResult(ruleId) {
+  const moduleId = ruleId.charAt(0);
+  if (moduleId !== state.moduleId) await selectModule(moduleId);
+  switchToLearnTab();
+  expandRuleCard(ruleId);
+}
+
+function renderSearchResults(query) {
+  const resultsBox = document.getElementById("ruleSearchResults");
+  const matches = searchRules(allRules, query).slice(0, 8);
+
+  if (!query.trim()) {
+    resultsBox.classList.add("hidden");
+    resultsBox.innerHTML = "";
+    return;
+  }
+
+  if (matches.length === 0) {
+    resultsBox.innerHTML = `<p class="search-empty">'${escapeHtml(query.trim())}'에 해당하는 규정을 찾지 못했습니다.</p>`;
+    resultsBox.classList.remove("hidden");
+    return;
+  }
+
+  resultsBox.innerHTML = matches
+    .map(
+      (rule) => `
+    <button class="search-result" type="button" data-result-id="${rule.id}">
+      <span class="search-result-id">${rule.id}</span>
+      <span class="search-result-body">
+        <strong>${escapeHtml(rule.title)}</strong>
+        <span>${escapeHtml(rule.summary)}</span>
+      </span>
+    </button>
+  `,
+    )
+    .join("");
+  resultsBox.classList.remove("hidden");
+}
+
+function bindSearch() {
+  const input = document.getElementById("ruleSearchInput");
+  const resultsBox = document.getElementById("ruleSearchResults");
+
+  input.addEventListener("input", () => renderSearchResults(input.value));
+  input.addEventListener("focus", () => {
+    if (input.value.trim()) renderSearchResults(input.value);
+  });
+  input.addEventListener("keydown", (event) => {
+    if (event.key === "Escape") {
+      input.value = "";
+      renderSearchResults("");
+      input.blur();
+    }
+    if (event.key === "Enter") {
+      const first = resultsBox.querySelector(".search-result");
+      if (first) first.click();
+    }
+  });
+  resultsBox.addEventListener("click", (event) => {
+    const button = event.target.closest("[data-result-id]");
+    if (!button) return;
+    resultsBox.classList.add("hidden");
+    resultsBox.innerHTML = "";
+    input.value = "";
+    goToSearchResult(button.dataset.resultId);
+  });
+  document.addEventListener("click", (event) => {
+    if (!event.target.closest(".search-bar")) resultsBox.classList.add("hidden");
+  });
+}
+
 async function init() {
   bindTabs();
   bindPractice();
@@ -388,7 +470,9 @@ async function init() {
   bindIntroStart();
   bindRuleCards();
   bindReportToggles();
+  bindSearch();
   renderChipScores();
+  allRules = await fetch("data/rules-all.json").then((res) => res.json()).then((data) => data.rules);
   await loadModule(state.moduleId);
 }
 
