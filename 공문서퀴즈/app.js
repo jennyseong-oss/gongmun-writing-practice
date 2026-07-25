@@ -1,4 +1,5 @@
 import { mergeQuizzes, shuffle } from "./quiz-all.js";
+import { resultMessage } from "./result-message.js";
 
 const QUIZ_FILES = {
   A: "data/quiz-a.json",
@@ -9,6 +10,7 @@ const QUIZ_FILES = {
 };
 
 const BEST_SCORE_KEY = "gongmun-quiz-all-best";
+const ROUND_SIZE = 10;
 
 const state = { quiz: [], quizIndex: 0, quizScore: 0 };
 
@@ -30,6 +32,18 @@ function saveBestScore(pct) {
   if (pct > getBestScore()) localStorage.setItem(BEST_SCORE_KEY, String(pct));
 }
 
+function renderProgress(completed) {
+  const total = state.quiz.length;
+  const pct = total > 0 ? Math.round((completed / total) * 100) : 0;
+  document.getElementById("quizProgress").innerHTML = `
+    <div class="quiz-progress-row">
+      <span>${state.quizIndex + 1} / ${total} 문항</span>
+      <span>맞은 개수 ${state.quizScore}</span>
+    </div>
+    <div class="quiz-progress-bar"><div class="quiz-progress-fill" style="width:${pct}%"></div></div>
+  `;
+}
+
 function renderQuizQuestion() {
   const quizBody = document.getElementById("quizBody");
   const progress = document.getElementById("quizProgress");
@@ -48,7 +62,7 @@ function renderQuizQuestion() {
   summary.classList.add("hidden");
 
   const q = state.quiz[state.quizIndex];
-  progress.textContent = `${state.quizIndex + 1} / ${state.quiz.length} 문항 · 맞은 개수 ${state.quizScore}`;
+  renderProgress(state.quizIndex);
   quizBody.innerHTML = `
     <div class="quiz-card">
       <p class="quiz-question">${escapeHtml(q.question)}</p>
@@ -78,8 +92,7 @@ function handleQuizChoice(idx, question) {
 
   document.getElementById("quizExplanation").classList.remove("hidden");
   document.getElementById("quizNextRow").classList.remove("hidden");
-  document.getElementById("quizProgress").textContent =
-    `${state.quizIndex + 1} / ${state.quiz.length} 문항 · 맞은 개수 ${state.quizScore}`;
+  renderProgress(state.quizIndex + 1);
   document.getElementById("quizNextButton").addEventListener("click", () => {
     state.quizIndex += 1;
     renderQuizQuestion();
@@ -93,17 +106,18 @@ function renderQuizSummary() {
   saveBestScore(pct);
   summary.innerHTML = `
     <div class="quiz-summary">
-      <p>전체 퀴즈 결과</p>
+      <p>이번 라운드 결과</p>
       <p class="score">${state.quizScore} / ${total}</p>
       <p>정답률 ${pct}% · 최고 기록 ${getBestScore()}%</p>
-      <button class="ghost-button" id="quizRetryButton" type="button">다시 풀기 (새로 섞기)</button>
+      <p class="result-message">${resultMessage(pct)}</p>
+      <button class="ghost-button" id="quizRetryButton" type="button">다른 ${ROUND_SIZE}문항 풀기</button>
     </div>
   `;
   document.getElementById("quizRetryButton").addEventListener("click", startQuiz);
 }
 
 function startQuiz() {
-  state.quiz = shuffle(state.fullQuiz);
+  state.quiz = shuffle(state.fullQuiz).slice(0, ROUND_SIZE);
   state.quizIndex = 0;
   state.quizScore = 0;
   renderQuizQuestion();
