@@ -76,3 +76,19 @@ button, input, select, textarea { font: inherit; }
 
 .source-strip { margin-top: 22px; padding: 16px 20px; background: var(--surface); border: 1px solid var(--line); border-radius: 12px; display: flex; flex-direction: column; gap: 5px; font-size: 12px; color: var(--muted); }
 .source-strip strong { color: var(--ink); margin-right: 6px; }
+
+@media (min-width: 1024px) {
+  .page-shell { max-width: 900px; }
+  .topbar h1 { font-size: 21px; }
+  .quiz-intro { font-size: 15.5px; }
+  .quiz-progress-row { font-size: 14px; }
+  .quiz-card { padding: 26px; }
+  .quiz-question { font-size: 17px; }
+  .quiz-choice { font-size: 15px; padding: 13px 18px; }
+  .quiz-explanation { font-size: 14px; padding: 14px 16px; }
+  .quiz-summary .score { font-size: 44px; }
+  .quiz-summary .result-message { font-size: 14.5px; }
+  .primary-button { font-size: 14.5px; padding: 13px 22px; }
+  .ghost-button { font-size: 14px; padding: 11px 18px; }
+  .source-strip { font-size: 13px; }
+}

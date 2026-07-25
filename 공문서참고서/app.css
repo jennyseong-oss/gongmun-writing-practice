@@ -121,3 +121,26 @@ button, input, select, textarea { font: inherit; }
   .report-row { grid-template-columns: 1fr; }
   .search-result-detail { padding-left: 12px; }
 }
+
+@media (min-width: 1024px) {
+  .page-shell { max-width: 1320px; }
+  .topbar h1 { font-size: 21px; }
+  .search-bar input[type="search"] { font-size: 15px; padding: 14px 18px; }
+  .search-result-body strong { font-size: 14.5px; }
+  .search-result-body span { font-size: 13.5px; }
+  .search-result-detail .basis { font-size: 12.5px; }
+  .search-result-detail .tip { font-size: 13.5px; }
+  .practice-intro h3 { font-size: 17px; }
+  .practice-intro p { font-size: 14.5px; }
+  .practice-textarea { font-size: 14.5px; padding: 16px; min-height: 190px; }
+  .practice-count { font-size: 14px; }
+  .preview-label { font-size: 13.5px; }
+  .practice-preview { font-size: 14.5px; }
+  .report-summary { font-size: 14px; }
+  .report-group-title { font-size: 14px; }
+  .report-row .rule-name { font-size: 14.5px; }
+  .report-row .message { font-size: 14px; }
+  .primary-button { font-size: 14.5px; padding: 13px 22px; }
+  .ghost-button { font-size: 14px; padding: 11px 18px; }
+  .source-strip { font-size: 13px; }
+}
