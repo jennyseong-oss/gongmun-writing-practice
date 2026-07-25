@@ -125,6 +125,7 @@ button, input, select, textarea { font: inherit; }
 @media (min-width: 1024px) {
   .page-shell { max-width: 1320px; }
   .topbar h1 { font-size: 21px; }
+  .companion-link { font-size: 14px; padding: 9px 16px; }
   .search-bar input[type="search"] { font-size: 15px; padding: 14px 18px; }
   .search-result-body strong { font-size: 14.5px; }
   .search-result-body span { font-size: 13.5px; }
