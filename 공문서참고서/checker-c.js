@@ -51,7 +51,7 @@ function checkC1(text) {
 }
 
 function checkC2(text) {
-  const hangulMatch = text.match(/\d{1,2}\s*시(\s*\d{1,2}\s*분)?/);
+  const hangulMatch = text.match(/\d{1,2}\s*시(?!간)(\s*\d{1,2}\s*분)?/);
   if (hangulMatch) {
     return {
       ruleId: "C2",

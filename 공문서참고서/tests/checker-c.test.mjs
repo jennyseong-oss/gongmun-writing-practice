@@ -81,6 +81,16 @@ test("C2: 시간 표기가 없으면 안내(info)", () => {
   assert.equal(result.status, "info");
 });
 
+test("C2: '24시간'처럼 기간을 뜻하는 표현은 시각으로 오인하지 않음", () => {
+  const result = checkC2("접수기간 내 24시간 접수 가능합니다.");
+  assert.equal(result.status, "info");
+});
+
+test("C2: '시간' 오탐이 없으면 뒤에 나오는 올바른 시각 표기로 통과 판정", () => {
+  const result = checkC2("24시간 접수 가능하며, 09:00부터 18:00까지 운영합니다.");
+  assert.equal(result.status, "pass");
+});
+
 test("C3: 아라비아 숫자는 통과", () => {
   const result = checkC3("참가 인원은 30명입니다.");
   assert.equal(result.status, "pass");
