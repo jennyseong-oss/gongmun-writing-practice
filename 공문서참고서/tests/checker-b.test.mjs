@@ -15,6 +15,12 @@ test("B1: 둘째 단계를 건너뛰고 다섯째 단계를 쓰면 경고", () =
   assert.equal(text.slice(result.matchIndex, result.matchIndex + result.matchText.length), "(1)");
 });
 
+test("B1: 붙임 목록에서 번호가 1부터 다시 시작해도 단계 건너뜀으로 보지 않음", () => {
+  const text = "1. 목적\n  가. 세부 목적\n2. 일시\n\n붙임  1. 계획서 1부.\n      2. 참가신청서 서식 1부.  끝.";
+  const result = checkB1(text);
+  assert.equal(result.status, "pass");
+});
+
 test("B2: 기호 뒤 한 칸이면 통과", () => {
   const result = checkB2("1. 목적");
   assert.equal(result.status, "pass");
@@ -43,6 +49,12 @@ test("B3: 둘째 단계인데 들여쓰기가 없으면 경고", () => {
   assert.equal(result.status, "warn");
   assert.equal(result.matchText, "가.");
   assert.equal(text.slice(result.matchIndex, result.matchIndex + result.matchText.length), "가.");
+});
+
+test("B3: 붙임 목록의 이어쓰기 들여쓰기는 검사 대상에서 제외", () => {
+  const text = "1. 목적\n2. 일시\n\n붙임  1. 계획서 1부.\n      2. 참가신청서 서식 1부.  끝.";
+  const result = checkB3(text);
+  assert.equal(result.status, "pass");
 });
 
 test("B5: 항목이 여러 개면 통과", () => {

@@ -17,6 +17,11 @@ test("A2: 관용구도 없고 예외 사유도 없으면 경고", () => {
   assert.equal(result.status, "warn");
 });
 
+test("A2: '붙임과 같이'도 시작 관용구로 인정", () => {
+  const result = checkA2("선정경쟁시험 시행 계획을 붙임과 같이 공고합니다.");
+  assert.equal(result.status, "pass");
+});
+
 test("A3: 올바른 붙임 표기는 통과", () => {
   const result = checkA3("붙임  2026학년도 직무연수 계획서 1부.  끝.");
   assert.equal(result.status, "pass");
@@ -38,6 +43,17 @@ test("A3: '붙임' 뒤 한 칸만 띄우면 경고", () => {
 
 test("A3: 붙임 표기가 없으면 안내(info)", () => {
   const result = checkA3("참석하여 주시기 바랍니다.  끝.");
+  assert.equal(result.status, "info");
+});
+
+test("A3: 본문 중간의 캐주얼한 '붙임' 언급은 무시하고 줄 앞의 실제 태그만 검사", () => {
+  const text = "라. 공고내용: 붙임 참조\n\n붙임  공고문 1부.  끝.";
+  const result = checkA3(text);
+  assert.equal(result.status, "pass");
+});
+
+test("A3: '붙임'이 줄 앞이 아니면 실제 태그로 보지 않고 못 찾은 것으로 처리", () => {
+  const result = checkA3("계획을 붙임과 같이 공고합니다.");
   assert.equal(result.status, "info");
 });
 

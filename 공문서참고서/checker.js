@@ -10,7 +10,7 @@ function checkA2(text) {
       message: "내부결재 문서 성격(구입·품의·계획(안)·실시)으로 보여 목적 직접 진술도 허용됩니다.",
     };
   }
-  if (/(아래와\s*같이|다음과\s*같이)/.test(head)) {
+  if (/(아래와\s*같이|다음과\s*같이|붙임과\s*같이)/.test(head)) {
     return {
       ruleId: "A2",
       status: "pass",
@@ -35,7 +35,7 @@ function checkA3(text) {
       matchIndex: wrongTermMatch.index,
     };
   }
-  const match = text.match(/붙임(\s*)(\S)/);
+  const match = text.match(/^붙임(\s*)(\S)/m);
   if (!match) {
     return {
       ruleId: "A3",

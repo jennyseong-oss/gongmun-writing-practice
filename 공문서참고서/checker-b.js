@@ -16,20 +16,36 @@ const LEVEL_PATTERNS = [
 
 const FORBIDDEN_MARKER_REGEX = /^(-|·|Ⅰ|Ⅱ|Ⅲ|Ⅳ|Ⅴ|Ⅵ|Ⅶ|Ⅷ|Ⅸ|Ⅹ|[A-Za-z])[.)]?\s/;
 
+// 붙임은 본문 항목 번호 체계와 무관한 별도 목록(예: "붙임  1. ... / 2. ...")이라
+// 그 안의 번호는 B모듈(본문 항목 번호) 검사 대상에서 제외한다.
+function findAttachmentStart(text) {
+  const lines = text.split("\n");
+  let offset = 0;
+  for (const rawLine of lines) {
+    if (/^붙임/.test(rawLine)) return offset;
+    offset += rawLine.length + 1;
+  }
+  return null;
+}
+
 function analyzeLines(text) {
+  const attachmentStart = findAttachmentStart(text);
   let offset = 0;
   return text.split("\n").map((rawLine) => {
     const leading = rawLine.match(/^ */)[0].length;
     const trimmed = rawLine.replace(/^ +/, "");
     const start = offset + leading;
+    const inAttachmentBlock = attachmentStart !== null && offset >= attachmentStart;
     let level = null;
     let markerLength = 0;
-    for (const pattern of LEVEL_PATTERNS) {
-      const match = trimmed.match(pattern.regex);
-      if (match) {
-        level = pattern.level;
-        markerLength = match[0].replace(/\s+$/, "").length;
-        break;
+    if (!inAttachmentBlock) {
+      for (const pattern of LEVEL_PATTERNS) {
+        const match = trimmed.match(pattern.regex);
+        if (match) {
+          level = pattern.level;
+          markerLength = match[0].replace(/\s+$/, "").length;
+          break;
+        }
       }
     }
     offset += rawLine.length + 1;
