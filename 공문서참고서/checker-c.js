@@ -142,11 +142,11 @@ function checkC4(text) {
         matchIndex: match.index,
       };
     }
-    if (/^금?(억|만|천|백)/.test(hangul)) {
+    if (/^금?(억|만|천|백|십)/.test(hangul)) {
       return {
         ruleId: "C4",
         status: "warn",
-        message: `한글 병기 '${hangul}'에서 억·만·천·백 앞에 '일'을 붙이세요. (예: 백오십만원 → 일백오십만원)`,
+        message: `한글 병기 '${hangul}'에서 억·만·천·백·십 자리 숫자가 1이면 '일'을 생략하지 마세요. (예: 백오십만원 → 일백오십만원)`,
         matchText: match[0],
         matchIndex: match.index,
       };

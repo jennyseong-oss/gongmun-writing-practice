@@ -113,6 +113,11 @@ test("C4: 쉼표·한글 병기·'일' 접두가 모두 맞으면 통과", () =>
   assert.equal(result.status, "pass");
 });
 
+test("C4: 자리 숫자가 1이 아니면 '일' 없이도 통과", () => {
+  const result = checkC4("금2,000,000원(금이백만원)입니다.");
+  assert.equal(result.status, "pass");
+});
+
 test("C4: 천 단위 쉼표가 없으면 경고", () => {
   const text = "금1500000원(금일백오십만원)입니다.";
   const result = checkC4(text);
@@ -127,11 +132,22 @@ test("C4: 한글 병기가 없으면 경고", () => {
   assert.equal(text.slice(result.matchIndex, result.matchIndex + result.matchText.length), result.matchText);
 });
 
-test("C4: 한글 병기에서 '일'이 빠지면 경고", () => {
+test("C4: 자리 숫자가 1인데 '일'이 빠지면 경고", () => {
   const text = "금1,500,000원(금백오십만원)입니다.";
   const result = checkC4(text);
   assert.equal(result.status, "warn");
   assert.equal(text.slice(result.matchIndex, result.matchIndex + result.matchText.length), result.matchText);
+});
+
+test("C4: '십' 자리 숫자가 1인데 '일'이 빠지면 경고", () => {
+  const text = "금113,560원(금십일만삼천오백육십원)입니다.";
+  const result = checkC4(text);
+  assert.equal(result.status, "warn");
+});
+
+test("C4: '십' 자리까지 '일'을 갖추면 통과 (실제 시행규칙 예시)", () => {
+  const result = checkC4("금113,560원(금일십일만삼천오백육십원)입니다.");
+  assert.equal(result.status, "pass");
 });
 
 test("C4: 금액 표기가 없으면 안내(info)", () => {
