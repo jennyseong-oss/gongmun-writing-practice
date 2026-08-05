@@ -123,7 +123,15 @@ function startQuiz() {
   renderQuizQuestion();
 }
 
+function bindCompanionLink() {
+  if (new URLSearchParams(location.search).get("from") !== "search") return;
+  const link = document.getElementById("companionLink");
+  link.href = "../search/";
+  link.textContent = "← 검색으로 돌아가기";
+}
+
 async function init() {
+  bindCompanionLink();
   const quizByModule = {};
   for (const [letter, file] of Object.entries(QUIZ_FILES)) {
     quizByModule[letter] = await fetch(file).then((res) => res.json());
