@@ -7,7 +7,7 @@ const MODULE_TITLES = {
   B: "항목 번호 체계",
   C: "날짜·숫자·금액",
   D: "용어·표현",
-  E: "용지·여백·글자",
+  E: "용지 규격",
 };
 
 const state = { rules: [] };
