@@ -6,6 +6,7 @@ on:
     paths:
       - "공문서참고서/**"
       - "공문서퀴즈/**"
+      - "공문서검색/**"
       - ".github/workflows/pages.yml"
   workflow_dispatch:
 
@@ -24,11 +25,12 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-      - name: Assemble site (참고서=루트, 퀴즈=/quiz)
+      - name: Assemble site (참고서=루트, 퀴즈=/quiz, 검색전용=/search)
         run: |
-          mkdir -p site/quiz
+          mkdir -p site/quiz site/search
           cp -r "공문서참고서/." site/
           cp -r "공문서퀴즈/." site/quiz/
+          cp -r "공문서검색/." site/search/
       - name: Configure Pages
         uses: actions/configure-pages@v5
       - name: Upload artifact
