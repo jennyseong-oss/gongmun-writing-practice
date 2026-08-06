@@ -1,6 +1,7 @@
-# 2026-08-06: 배포(d49eb1b, 62c6c15, f7b6818) 세 번 연속 deploy 단계가 정확히 10분(기본
-# timeout)에 "Timeout reached, aborting!"로 실패 — Pages 백엔드 응답 지연으로 보고
-# deploy-pages timeout을 30분으로 늘려 재시도
+# 2026-08-06: 같은 커밋(8fccb84)으로 반복 배포 시도 시 GitHub Pages 쪽에 남은 이전
+# 배포 상태와 충돌해 "Deployment cancelled."로 계속 실패함(로그로 확인). timeout을
+# 30분으로 늘려봤지만 deploy-pages가 10분으로 강제 상한하는 걸 확인해 원복하고,
+# 새 커밋으로 재시도.
 name: Deploy 공문서 작성 도구 모음 to GitHub Pages
 
 on:
@@ -51,5 +52,3 @@ jobs:
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
-        with:
-          timeout: 1800000
