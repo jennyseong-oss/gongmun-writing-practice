@@ -1,4 +1,6 @@
-# 2026-08-06: 배포(d49eb1b, 62c6c15) 두 번 연속 deploy 단계 타임아웃으로 실패해 재트리거
+# 2026-08-06: 배포(d49eb1b, 62c6c15, f7b6818) 세 번 연속 deploy 단계가 정확히 10분(기본
+# timeout)에 "Timeout reached, aborting!"로 실패 — Pages 백엔드 응답 지연으로 보고
+# deploy-pages timeout을 30분으로 늘려 재시도
 name: Deploy 공문서 작성 도구 모음 to GitHub Pages
 
 on:
@@ -49,3 +51,5 @@ jobs:
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
+        with:
+          timeout: 1800000
