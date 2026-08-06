@@ -1,3 +1,4 @@
+# 2026-08-06: 이전 배포(d49eb1b)의 deploy 단계가 인프라 오류로 실패해 재트리거
 name: Deploy 공문서 작성 도구 모음 to GitHub Pages
 
 on:
